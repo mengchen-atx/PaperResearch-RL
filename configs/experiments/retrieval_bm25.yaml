@@ -1,0 +1,3 @@
+experiment: {name: retrieval_bm25, system: retrieval, description: "BM25-only sparse retrieval"}
+retrieval: {mode: bm25}
+reranker: {enabled: false}

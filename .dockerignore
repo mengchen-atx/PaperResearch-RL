@@ -1,0 +1,8 @@
+.venv
+.git
+data
+benchmarks/results
+**/__pycache__
+.pytest_cache
+.ruff_cache
+notebooks

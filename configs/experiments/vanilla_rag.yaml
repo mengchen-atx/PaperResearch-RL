@@ -1,0 +1,3 @@
+experiment: {name: vanilla_rag, system: rag, description: "Vanilla RAG: dense top-5, no reranker"}
+retrieval: {mode: dense, top_k: 5}
+reranker: {enabled: false}

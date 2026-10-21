@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: atlas-config, namespace: atlas}
+data:
+  ATLAS__ENVIRONMENT: production
+  ATLAS__SERVING__QUEUE_BACKEND: redis
+  ATLAS__SERVING__REDIS_URL: redis://redis:6379/0
+  ATLAS__CACHE__BACKEND: redis
+  ATLAS__RETRIEVAL__VECTOR_STORE: qdrant
+  ATLAS__RETRIEVAL__QDRANT_URL: http://qdrant:6333
+  ATLAS__LLM__PROVIDER: openai_compatible
+  ATLAS__LLM__BASE_URL: http://vllm:8000/v1
+  ATLAS__LLM__MODEL: Qwen/Qwen2.5-7B-Instruct
+  ATLAS__VLM__PROVIDER: none
+  ATLAS__TOOLS__PYTHON_MODE: disabled       # arbitrary code execution is off in production
+  ATLAS__OBSERVABILITY__LOG_JSON: "true"

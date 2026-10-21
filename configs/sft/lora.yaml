@@ -1,0 +1,18 @@
+# SFT with LoRA on the agent's own successful trajectories.
+# python scripts/train_sft.py -c configs/sft/lora.yaml
+base_model: Qwen/Qwen2.5-0.5B-Instruct
+trajectories:
+  - data/trajectories/agent_heuristic.jsonl
+  - data/trajectories/agent_llm.jsonl
+output_dir: data/processed/sft
+qlora: false
+lora: {r: 16, alpha: 32, dropout: 0.05}
+learning_rate: 0.0002
+num_train_epochs: 2
+per_device_train_batch_size: 2
+gradient_accumulation_steps: 4
+max_length: 2048
+val_fraction: 0.2
+min_answer_score: 1.0
+include_writer: true
+seed: 0

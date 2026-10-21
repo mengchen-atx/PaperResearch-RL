@@ -1,0 +1,3 @@
+experiment: {name: hybrid_rerank_rag, system: rag, description: "Hybrid RAG + cross-encoder reranker, top-5"}
+retrieval: {mode: hybrid, fusion: rrf, top_k: 5, candidate_k: 30}
+reranker: {enabled: true}

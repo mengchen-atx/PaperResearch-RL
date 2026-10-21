@@ -1,0 +1,3 @@
+experiment: {name: hybrid_rag, system: rag, description: "Hybrid RAG: BM25 + dense RRF top-5, no reranker"}
+retrieval: {mode: hybrid, fusion: rrf, top_k: 5}
+reranker: {enabled: false}

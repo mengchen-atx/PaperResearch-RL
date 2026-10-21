@@ -1,0 +1,1 @@
+experiment: {name: base_llm, system: base_llm, description: "Closed-book LLM (no retrieval)"}

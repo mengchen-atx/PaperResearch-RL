@@ -1,0 +1,9 @@
+# Shared read-mostly volume for the index (chunks, BM25, figures, tables.sqlite).
+# ReadWriteMany needs an RWX storage class (EFS/Filestore/NFS). Alternative: bake the
+# index into an image layer or sync from object storage in an initContainer.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: {name: atlas-data, namespace: atlas}
+spec:
+  accessModes: [ReadWriteMany]
+  resources: {requests: {storage: 20Gi}}

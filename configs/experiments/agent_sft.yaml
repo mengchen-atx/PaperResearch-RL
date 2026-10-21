@@ -1,0 +1,3 @@
+experiment: {name: agent_sft, system: agent, policy: llm, description: "Agent whose LLM is the base model + SFT LoRA adapter trained on filtered trajectories"}
+agent: {policy: llm, planner: llm}
+llm: {model: Qwen/Qwen2.5-0.5B-Instruct, adapter_path: data/processed/sft/adapter}

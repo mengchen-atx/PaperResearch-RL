@@ -1,0 +1,83 @@
+{
+  "experiment": {
+    "name": "extractive_rag",
+    "system": "rag",
+    "description": "No-LLM floor: hybrid+rerank retrieval, extractive answerer"
+  },
+  "benchmark": "data/benchmarks/atlas_papers_v1.jsonl",
+  "num_items": 46,
+  "wall_time_s": 12.030511874705553,
+  "metrics": {
+    "n": 46,
+    "citation_count": 2.652173913043478,
+    "citation_coverage": 1.0,
+    "citation_precision": 0.322463768115942,
+    "citation_validity": 1.0,
+    "completion_tokens": 97.91304347826087,
+    "correct": 0.41304347826086957,
+    "cost_usd": 0.0,
+    "generation_ms": 0.5879465531071891,
+    "groundedness": 0.9782608695652172,
+    "has_valid_citation": 1.0,
+    "latency_ms": 168.22409783692464,
+    "mrr": 0.6764492753623188,
+    "ndcg@1": 0.5,
+    "ndcg@3": 0.9123887555880804,
+    "ndcg@5": 1.0366134056011442,
+    "precision@1": 0.5,
+    "precision@3": 0.4347826086956521,
+    "precision@5": 0.32608695652173914,
+    "prompt_tokens": 573.4782608695652,
+    "recall@1": 0.4673913043478261,
+    "recall@3": 0.8152173913043478,
+    "recall@5": 0.8804347826086957,
+    "retrieval_ms": 167.63615128381744,
+    "token_f1": 0.01664607530313606,
+    "latency_p50_ms": 167.20141610130668,
+    "latency_p95_ms": 216.10544831492007,
+    "throughput_qps_sequential": 5.944451555147548,
+    "by_type": {
+      "compute": {
+        "n": 4,
+        "correct": 0.25
+      },
+      "figure": {
+        "n": 4,
+        "correct": 0.5
+      },
+      "multihop": {
+        "n": 2,
+        "correct": 0.5
+      },
+      "table": {
+        "n": 8,
+        "correct": 0.5
+      },
+      "text": {
+        "n": 28,
+        "correct": 0.39285714285714285
+      }
+    }
+  },
+  "models": {
+    "llm": "extractive",
+    "llm_provider": "extractive",
+    "embedding": "BAAI/bge-small-en-v1.5",
+    "reranker": "cross-encoder/ms-marco-MiniLM-L-6-v2"
+  },
+  "retrieval": {
+    "mode": "hybrid",
+    "fusion": "rrf",
+    "top_k": 5,
+    "candidate_k": 30,
+    "vector_store": "faiss"
+  },
+  "environment": {
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "python": "3.12.2",
+    "device": "mps",
+    "git_commit": null,
+    "timestamp": "2026-09-29T00:21:25"
+  }
+}

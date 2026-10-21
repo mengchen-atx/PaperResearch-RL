@@ -1,0 +1,3 @@
+experiment: {name: retrieval_hybrid, system: retrieval, description: "Hybrid BM25 + dense with RRF fusion"}
+retrieval: {mode: hybrid, fusion: rrf}
+reranker: {enabled: false}

@@ -1,0 +1,3 @@
+experiment: {name: retrieval_dense, system: retrieval, description: "Dense-only retrieval (bge-small + FAISS exact IP)"}
+retrieval: {mode: dense}
+reranker: {enabled: false}

@@ -1,0 +1,91 @@
+# Atlas default configuration. Override with `-c configs/experiments/<x>.yaml`
+# or environment variables: ATLAS__<SECTION>__<KEY>=value (e.g. ATLAS__LLM__PROVIDER=extractive).
+environment: development
+
+paths:
+  data_dir: data
+  index_dir: data/processed/index
+  trajectories_dir: data/trajectories
+  runs_dir: benchmarks/results
+  cache_dir: data/processed/cache
+  trace_dir: data/processed/traces
+  upload_dir: data/raw/uploads
+
+chunking:
+  chunk_size: 1000        # characters (~250 tokens)
+  chunk_overlap: 150
+  min_chunk_chars: 40
+
+embedding:
+  provider: sentence_transformers
+  model_name: BAAI/bge-small-en-v1.5
+  batch_size: 32
+  device: auto
+  cache: true
+
+retrieval:
+  mode: hybrid            # dense | bm25 | hybrid
+  vector_store: faiss     # numpy | faiss | qdrant
+  top_k: 5
+  candidate_k: 30
+  fusion: rrf             # rrf | weighted
+  rrf_k: 60
+  dense_weight: 0.5
+  query_rewrite: none     # none | keywords | llm
+
+reranker:
+  enabled: true
+  provider: cross_encoder
+  model_name: cross-encoder/ms-marco-MiniLM-L-6-v2
+
+llm:
+  provider: hf_local      # hf_local | openai_compatible | anthropic | extractive
+  model: Qwen/Qwen2.5-1.5B-Instruct
+  temperature: 0.0
+  max_new_tokens: 320
+  max_retries: 2
+  timeout_s: 180
+
+vlm:
+  provider: hf_local      # hf_local | openai_compatible | anthropic | none
+  model: HuggingFaceTB/SmolVLM-256M-Instruct
+  max_new_tokens: 200
+
+multimodal:
+  extract_tables: true
+  extract_figures: true
+
+agent:
+  policy: heuristic       # heuristic | llm | learned
+  planner: llm            # llm | heuristic
+  critic: heuristic       # heuristic | llm
+  max_iterations: 6
+  max_tool_calls: 8
+  timeout_s: 300
+  min_evidence: 2
+  sufficient_score: 0.6
+  max_subquestions: 3
+
+tools:
+  python_mode: sandbox    # disabled | sandbox  (forced to disabled in production)
+  python_timeout_s: 5
+  web_backend: disabled   # disabled | wikipedia | tavily
+  tool_timeout_s: 120
+
+serving:
+  host: 0.0.0.0
+  port: 8000
+  queue_backend: memory   # memory | redis
+  redis_url: redis://localhost:6379/0
+  max_concurrent_jobs: 1
+  rate_limit_per_minute: 60
+
+cache:
+  backend: memory         # none | memory | redis
+
+observability:
+  log_level: INFO
+  log_json: false
+
+trajectory:
+  enabled: true

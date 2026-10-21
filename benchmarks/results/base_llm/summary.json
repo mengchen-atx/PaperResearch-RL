@@ -1,0 +1,73 @@
+{
+  "experiment": {
+    "name": "base_llm",
+    "system": "base_llm",
+    "description": "Closed-book LLM (no retrieval)"
+  },
+  "benchmark": "data/benchmarks/atlas_papers_v1.jsonl",
+  "num_items": 46,
+  "wall_time_s": 76.14348816592246,
+  "metrics": {
+    "n": 46,
+    "citation_count": 0.0,
+    "citation_coverage": 0.0,
+    "citation_precision": 0.0,
+    "citation_validity": 0.0,
+    "completion_tokens": 33.43478260869565,
+    "correct": 0.10869565217391304,
+    "cost_usd": 0.0,
+    "generation_ms": 1534.342836001483,
+    "groundedness": 0.0,
+    "has_valid_citation": 0.0,
+    "latency_ms": 1534.342836001483,
+    "prompt_tokens": 57.891304347826086,
+    "retrieval_ms": 0.0,
+    "token_f1": 0.011747059236540302,
+    "latency_p50_ms": 1449.784374795854,
+    "latency_p95_ms": 2577.9563535470515,
+    "throughput_qps_sequential": 0.651744822953658,
+    "by_type": {
+      "compute": {
+        "n": 4,
+        "correct": 0.0
+      },
+      "figure": {
+        "n": 4,
+        "correct": 0.0
+      },
+      "multihop": {
+        "n": 2,
+        "correct": 0.5
+      },
+      "table": {
+        "n": 8,
+        "correct": 0.0
+      },
+      "text": {
+        "n": 28,
+        "correct": 0.14285714285714285
+      }
+    }
+  },
+  "models": {
+    "llm": "Qwen/Qwen2.5-1.5B-Instruct",
+    "llm_provider": "hf_local",
+    "embedding": "BAAI/bge-small-en-v1.5",
+    "reranker": "cross-encoder/ms-marco-MiniLM-L-6-v2"
+  },
+  "retrieval": {
+    "mode": "hybrid",
+    "fusion": "rrf",
+    "top_k": 5,
+    "candidate_k": 30,
+    "vector_store": "faiss"
+  },
+  "environment": {
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "python": "3.12.2",
+    "device": "mps",
+    "git_commit": null,
+    "timestamp": "2026-09-29T00:22:41"
+  }
+}

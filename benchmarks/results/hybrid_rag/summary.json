@@ -1,0 +1,83 @@
+{
+  "experiment": {
+    "name": "hybrid_rag",
+    "system": "rag",
+    "description": "Hybrid RAG: BM25 + dense RRF top-5, no reranker"
+  },
+  "benchmark": "data/benchmarks/atlas_papers_v1.jsonl",
+  "num_items": 46,
+  "wall_time_s": 413.03393991757184,
+  "metrics": {
+    "n": 46,
+    "citation_count": 0.8913043478260869,
+    "citation_coverage": 0.6079710144927537,
+    "citation_precision": 0.31956521739130433,
+    "citation_validity": 0.717391304347826,
+    "completion_tokens": 54.08695652173913,
+    "correct": 0.5869565217391305,
+    "cost_usd": 0.0,
+    "generation_ms": 8565.259317037366,
+    "groundedness": 0.7971014492753623,
+    "has_valid_citation": 0.717391304347826,
+    "latency_ms": 8614.168542497993,
+    "mrr": 0.6684782608695652,
+    "ndcg@1": 0.5217391304347826,
+    "ndcg@3": 0.8859290725901868,
+    "ndcg@5": 1.0485565483235206,
+    "precision@1": 0.5217391304347826,
+    "precision@3": 0.42028985507246375,
+    "precision@5": 0.3347826086956522,
+    "prompt_tokens": 1102.1304347826087,
+    "recall@1": 0.4891304347826087,
+    "recall@3": 0.8043478260869565,
+    "recall@5": 0.8695652173913043,
+    "retrieval_ms": 48.9092254606278,
+    "token_f1": 0.08247879134624717,
+    "latency_p50_ms": 5448.376290965825,
+    "latency_p95_ms": 22451.04367705062,
+    "throughput_qps_sequential": 0.11608781451935851,
+    "by_type": {
+      "compute": {
+        "n": 4,
+        "correct": 0.25
+      },
+      "figure": {
+        "n": 4,
+        "correct": 0.75
+      },
+      "multihop": {
+        "n": 2,
+        "correct": 0.5
+      },
+      "table": {
+        "n": 8,
+        "correct": 0.625
+      },
+      "text": {
+        "n": 28,
+        "correct": 0.6071428571428571
+      }
+    }
+  },
+  "models": {
+    "llm": "Qwen/Qwen2.5-1.5B-Instruct",
+    "llm_provider": "hf_local",
+    "embedding": "BAAI/bge-small-en-v1.5",
+    "reranker": null
+  },
+  "retrieval": {
+    "mode": "hybrid",
+    "fusion": "rrf",
+    "top_k": 5,
+    "candidate_k": 30,
+    "vector_store": "faiss"
+  },
+  "environment": {
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "python": "3.12.2",
+    "device": "mps",
+    "git_commit": null,
+    "timestamp": "2026-09-29T00:37:51"
+  }
+}

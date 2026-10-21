@@ -1,0 +1,35 @@
+# Agent workers consume the Redis job queue. Scale on queue depth, not CPU: most time is
+# spent waiting on the inference service. With KEDA installed, the ScaledObject below
+# scales workers on the length of `atlas:jobs:queue`; without KEDA, set replicas manually.
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: atlas-worker, namespace: atlas, labels: {app: atlas-worker}}
+spec:
+  replicas: 2
+  selector: {matchLabels: {app: atlas-worker}}
+  template:
+    metadata: {labels: {app: atlas-worker}}
+    spec:
+      terminationGracePeriodSeconds: 330     # let an in-flight research job finish (agent timeout 300s)
+      securityContext: {runAsNonRoot: true, runAsUser: 10001}
+      containers:
+        - name: worker
+          image: atlas:latest
+          args: ["atlas", "worker"]
+          envFrom: [{configMapRef: {name: atlas-config}}, {secretRef: {name: atlas-secrets, optional: true}}]
+          resources:
+            requests: {cpu: "1", memory: 3Gi}
+            limits: {cpu: "2", memory: 4Gi}
+          volumeMounts: [{name: data, mountPath: /app/data}]
+      volumes: [{name: data, persistentVolumeClaim: {claimName: atlas-data}}]
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata: {name: atlas-worker, namespace: atlas}
+spec:
+  scaleTargetRef: {name: atlas-worker}
+  minReplicaCount: 1
+  maxReplicaCount: 20
+  triggers:
+    - type: redis
+      metadata: {address: redis:6379, listName: "atlas:jobs:queue", listLength: "4"}

@@ -1,0 +1,2 @@
+experiment: {name: agent_learned, system: agent, policy: learned, description: "Agent with RL-trained router policy (REINFORCE, see atlas.rl)"}
+agent: {policy: learned, planner: llm}

@@ -1,0 +1,11 @@
+{
+  "endpoint": "ask",
+  "requests": 12,
+  "concurrency": 2,
+  "errors": 0,
+  "wall_s": 71.83202762529254,
+  "throughput_rps": 0.16705640083831796,
+  "latency_p50_ms": 10682.566875591874,
+  "latency_p95_ms": 20887.280758004636,
+  "latency_p99_ms": 20891.48305123672
+}

@@ -1,0 +1,3 @@
+experiment: {name: agent_base05, system: agent, policy: llm, description: "Control for agent_sft: same 0.5B base model and LLM router, no adapter"}
+agent: {policy: llm, planner: llm}
+llm: {model: Qwen/Qwen2.5-0.5B-Instruct}

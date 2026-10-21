@@ -1,0 +1,2 @@
+experiment: {name: agent_heuristic, system: agent, policy: heuristic, description: "LangGraph agent, rule-based router, LLM planner/writer, all tools incl. VLM"}
+agent: {policy: heuristic, planner: llm, critic: heuristic}

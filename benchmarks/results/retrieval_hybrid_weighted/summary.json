@@ -1,0 +1,73 @@
+{
+  "experiment": {
+    "name": "retrieval_hybrid_weighted",
+    "system": "retrieval",
+    "description": "Hybrid with weighted min-max fusion (w=0.5)"
+  },
+  "benchmark": "data/benchmarks/atlas_papers_v1.jsonl",
+  "num_items": 46,
+  "wall_time_s": 0.43282141722738743,
+  "metrics": {
+    "n": 46,
+    "latency_ms": 6.838810711127261,
+    "mrr": 0.7132850241545894,
+    "ndcg@1": 0.5652173913043478,
+    "ndcg@10": 0.7535880174009313,
+    "ndcg@3": 0.7111138209577558,
+    "ndcg@5": 0.734995360716801,
+    "precision@1": 0.5652173913043478,
+    "precision@10": 0.21956521739130433,
+    "precision@3": 0.43478260869565216,
+    "precision@5": 0.32608695652173914,
+    "recall@1": 0.532608695652174,
+    "recall@10": 0.9456521739130435,
+    "recall@3": 0.8260869565217391,
+    "recall@5": 0.8695652173913043,
+    "latency_p50_ms": 6.810812279582024,
+    "latency_p95_ms": 7.397583220154047,
+    "throughput_qps_sequential": 146.2242548068957,
+    "by_type": {
+      "compute": {
+        "n": 4,
+        "recall@5": 0.5
+      },
+      "figure": {
+        "n": 4,
+        "recall@5": 1.0
+      },
+      "multihop": {
+        "n": 2,
+        "recall@5": 0.75
+      },
+      "table": {
+        "n": 8,
+        "recall@5": 0.875
+      },
+      "text": {
+        "n": 28,
+        "recall@5": 0.9107142857142857
+      }
+    }
+  },
+  "models": {
+    "llm": null,
+    "llm_provider": "hf_local",
+    "embedding": "BAAI/bge-small-en-v1.5",
+    "reranker": null
+  },
+  "retrieval": {
+    "mode": "hybrid",
+    "fusion": "weighted",
+    "top_k": 5,
+    "candidate_k": 30,
+    "vector_store": "faiss"
+  },
+  "environment": {
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "python": "3.12.2",
+    "device": "mps",
+    "git_commit": null,
+    "timestamp": "2026-09-29T00:44:44"
+  }
+}

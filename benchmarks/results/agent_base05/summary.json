@@ -1,0 +1,85 @@
+{
+  "experiment": {
+    "name": "agent_base05",
+    "system": "agent",
+    "policy": "llm",
+    "description": "Control for agent_sft: same 0.5B base model and LLM router, no adapter"
+  },
+  "benchmark": "data/benchmarks/atlas_papers_v1.jsonl",
+  "num_items": 46,
+  "wall_time_s": 543.9017853336409,
+  "metrics": {
+    "n": 46,
+    "budget_exhausted": 0.9565217391304348,
+    "citation_count": 0.10869565217391304,
+    "citation_coverage": 0.05434782608695652,
+    "citation_precision": 0.125,
+    "citation_validity": 1.0,
+    "cited": 0.10869565217391304,
+    "completed": 1.0,
+    "completion_tokens": 282.5652173913044,
+    "correct": 0.5869565217391305,
+    "cost_usd": 0.0,
+    "duplicate_calls_skipped": 2.1956521739130435,
+    "evidence_count": 8.217391304347826,
+    "evidence_recall": 0.9456521739130435,
+    "failed_tool_calls": 2.1956521739130435,
+    "groundedness": 0.8913043478260869,
+    "has_valid_citation": 0.08695652173913043,
+    "latency_ms": 11688.79692296943,
+    "policy_fallbacks": 0.34782608695652173,
+    "prompt_tokens": 5792.239130434783,
+    "replans": 0.021739130434782608,
+    "required_tool_recall": 0.1111111111111111,
+    "token_f1": 0.08809094318726808,
+    "tool_calls": 5.869565217391305,
+    "trajectory_length": 6.891304347826087,
+    "unproductive_tool_calls": 0.9347826086956522,
+    "latency_p50_ms": 11665.076291188598,
+    "latency_p95_ms": 16964.393999660388,
+    "throughput_qps_sequential": 0.08555200390511698,
+    "by_type": {
+      "compute": {
+        "n": 4,
+        "correct": 0.0
+      },
+      "figure": {
+        "n": 4,
+        "correct": 0.75
+      },
+      "multihop": {
+        "n": 2,
+        "correct": 0.5
+      },
+      "table": {
+        "n": 8,
+        "correct": 0.375
+      },
+      "text": {
+        "n": 28,
+        "correct": 0.7142857142857143
+      }
+    }
+  },
+  "models": {
+    "llm": "Qwen/Qwen2.5-0.5B-Instruct",
+    "llm_provider": "hf_local",
+    "embedding": "BAAI/bge-small-en-v1.5",
+    "reranker": "cross-encoder/ms-marco-MiniLM-L-6-v2"
+  },
+  "retrieval": {
+    "mode": "hybrid",
+    "fusion": "rrf",
+    "top_k": 5,
+    "candidate_k": 30,
+    "vector_store": "faiss"
+  },
+  "environment": {
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "python": "3.12.2",
+    "device": "mps",
+    "git_commit": null,
+    "timestamp": "2026-09-29T14:14:47"
+  }
+}

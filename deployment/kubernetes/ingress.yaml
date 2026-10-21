@@ -1,0 +1,17 @@
+# Gateway: TLS termination, per-client rate limiting and long timeouts for SSE streams.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: atlas
+  namespace: atlas
+  annotations:
+    nginx.ingress.kubernetes.io/limit-rps: "10"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: atlas.example.com
+      http:
+        paths:
+          - {path: /, pathType: Prefix, backend: {service: {name: atlas-api, port: {name: http}}}}

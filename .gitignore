@@ -1,0 +1,18 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.env
+.DS_Store
+# data: corpus PDFs are downloaded (scripts/download_corpus.sh); indexes/models are rebuilt
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/trajectories/*.jsonl
+!data/trajectories/sample_trajectories.jsonl
+# large training artifacts
+data/processed/sft/
+data/processed/grpo/
+*.safetensors

@@ -1,0 +1,4 @@
+experiment: {name: agent_text_only, system: agent, policy: heuristic, description: "Agent ablation: no VLM, no tables/SQL, no Python (text retrieval only)"}
+agent: {policy: heuristic, planner: llm}
+vlm: {provider: none}
+tools: {python_mode: disabled, sql_db_path: data/processed/index/__no_tables__.sqlite}

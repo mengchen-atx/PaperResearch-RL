@@ -1,0 +1,4 @@
+experiment: {name: extractive_rag, system: rag, description: "No-LLM floor: hybrid+rerank retrieval, extractive answerer"}
+retrieval: {mode: hybrid, fusion: rrf, top_k: 5}
+reranker: {enabled: true}
+llm: {provider: extractive, model: extractive}

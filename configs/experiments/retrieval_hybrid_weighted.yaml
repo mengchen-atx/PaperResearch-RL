@@ -1,0 +1,3 @@
+experiment: {name: retrieval_hybrid_weighted, system: retrieval, description: "Hybrid with weighted min-max fusion (w=0.5)"}
+retrieval: {mode: hybrid, fusion: weighted, dense_weight: 0.5}
+reranker: {enabled: false}

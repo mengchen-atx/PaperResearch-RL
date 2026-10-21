@@ -1,0 +1,17 @@
+# QLoRA: 4-bit NF4 base + LoRA adapters. REQUIRES a CUDA GPU (bitsandbytes).
+# Suggested: Qwen2.5-7B-Instruct on a single 24 GB GPU.
+# python scripts/train_sft.py -c configs/sft/qlora.yaml
+base_model: Qwen/Qwen2.5-7B-Instruct
+trajectories:
+  - data/trajectories/agent_heuristic.jsonl
+  - data/trajectories/agent_llm.jsonl
+output_dir: data/processed/sft_qlora
+qlora: true
+lora: {r: 16, alpha: 32, dropout: 0.05}
+learning_rate: 0.0002
+num_train_epochs: 2
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 8
+max_length: 2048
+val_fraction: 0.2
+seed: 0

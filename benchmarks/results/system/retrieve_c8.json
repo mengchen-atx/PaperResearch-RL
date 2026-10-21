@@ -1,0 +1,11 @@
+{
+  "endpoint": "retrieve",
+  "requests": 200,
+  "concurrency": 8,
+  "errors": 0,
+  "wall_s": 15.112647417001426,
+  "throughput_rps": 13.23394865779797,
+  "latency_p50_ms": 0.906478613615036,
+  "latency_p95_ms": 1786.767539521679,
+  "latency_p99_ms": 5497.08690997213
+}

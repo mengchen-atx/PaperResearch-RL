@@ -1,0 +1,2 @@
+experiment: {name: agent_llm, system: agent, policy: llm, description: "LangGraph agent, LLM router (JSON actions) with heuristic fallback"}
+agent: {policy: llm, planner: llm, critic: heuristic}

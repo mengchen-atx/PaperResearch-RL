@@ -1,0 +1,17 @@
+{
+  "endpoint": "http://127.0.0.1:8001/v1",
+  "model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "requests": 8,
+  "concurrency": 1,
+  "max_tokens": 128,
+  "wall_s": 45.51960266660899,
+  "ttft_p50_s": 0.22906620847061276,
+  "ttft_p95_s": 0.35653381650336086,
+  "latency_p50_s": 5.715593291912228,
+  "latency_p95_s": 6.072873097704723,
+  "decode_tokens_per_s_mean": 19.34694303052821,
+  "throughput_req_per_s": 0.17574845849584753,
+  "throughput_output_tokens_per_s": 18.45358814206399,
+  "host": "macOS-26.5.1-arm64-arm-64bit",
+  "label": "HF transformers dev server, M4 MPS, c=1"
+}

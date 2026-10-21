@@ -1,0 +1,38 @@
+# vLLM inference service (OpenAI-compatible). One replica per GPU; scale replicas for
+# throughput, or use --tensor-parallel-size N on multi-GPU nodes for larger models.
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: vllm, namespace: atlas, labels: {app: vllm}}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: vllm}}
+  template:
+    metadata: {labels: {app: vllm}}
+    spec:
+      nodeSelector: {nvidia.com/gpu.present: "true"}
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:latest
+          args:
+            - --model=Qwen/Qwen2.5-7B-Instruct
+            - --max-model-len=8192
+            - --gpu-memory-utilization=0.90      # fraction of VRAM for weights + PagedAttention KV cache
+            - --enable-prefix-caching             # agent prompts share long system/evidence prefixes
+            - --max-num-seqs=64                   # continuous-batching concurrency cap
+            # - --enable-lora --lora-modules atlas-sft=/adapters/sft   # serve the SFT adapter
+            # - --quantization=awq                                     # with an AWQ checkpoint
+          ports: [{containerPort: 8000, name: http}]
+          resources:
+            limits: {nvidia.com/gpu: 1, memory: 32Gi}
+            requests: {nvidia.com/gpu: 1, cpu: "4", memory: 24Gi}
+          readinessProbe: {httpGet: {path: /health, port: http}, initialDelaySeconds: 120, periodSeconds: 10}
+          livenessProbe: {httpGet: {path: /health, port: http}, initialDelaySeconds: 300, periodSeconds: 30}
+          volumeMounts: [{name: hf-cache, mountPath: /root/.cache/huggingface}, {name: shm, mountPath: /dev/shm}]
+      volumes:
+        - {name: hf-cache, emptyDir: {}}
+        - {name: shm, emptyDir: {medium: Memory, sizeLimit: 8Gi}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: vllm, namespace: atlas}
+spec: {selector: {app: vllm}, ports: [{port: 8000, targetPort: http, name: http}]}

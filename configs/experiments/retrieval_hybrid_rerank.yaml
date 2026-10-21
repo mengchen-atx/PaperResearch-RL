@@ -1,0 +1,3 @@
+experiment: {name: retrieval_hybrid_rerank, system: retrieval, description: "Hybrid RRF + cross-encoder rerank of top-30"}
+retrieval: {mode: hybrid, fusion: rrf, candidate_k: 30}
+reranker: {enabled: true}
