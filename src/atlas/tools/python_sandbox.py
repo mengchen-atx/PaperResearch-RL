@@ -63,12 +63,12 @@ def validate_code(code: str) -> None:
 
 _PRELUDE = """
 import resource, sys
-def _limit(res, value):
+def _limit(res, value, hard=None):
     try:
-        resource.setrlimit(res, (value, value))
+        resource.setrlimit(res, (value, value if hard is None else hard))
     except (ValueError, OSError):
         pass  # some limits are unsupported on macOS; the wall-clock timeout still applies
-_limit(resource.RLIMIT_CPU, {cpu})
+_limit(resource.RLIMIT_CPU, {cpu}, {cpu} + 1)  # soft < hard: SIGXCPU (reported as timeout) before SIGKILL
 _limit(resource.RLIMIT_FSIZE, 1 << 20)
 if sys.platform.startswith("linux"):
     _limit(resource.RLIMIT_AS, {mem} * 1024 * 1024)
