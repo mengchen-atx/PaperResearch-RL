@@ -28,7 +28,7 @@ Legend
 | SFT (TRL + PEFT) | **VERIFIED (small scale)** | Qwen2.5-0.5B-Instruct, 29 filtered trajectories (held-out questions excluded) → 123 train / 31 val router examples, 2 epochs, 11 min on MPS; `data/processed/sft/{train_metrics,eval}.json`. Router-only: the trajectories were collected before the metadata-merge fix, so writer examples were unavailable (fixed + regression-tested; re-collect to include them). Imitation improved (valid JSON 71%→100%, action acc. 45%→71%), but the SFT agent scored 52.2% vs 58.7% for the un-adapted 0.5B control (`agent_base05`) |
 | LoRA | **VERIFIED (small scale)** | adapter saved to `data/processed/sft/adapter` (not committed); `llm.adapter_path` loads it for inference |
 | QLoRA | **CONFIGURED, REQUIRES EXTERNAL RESOURCE** | `configs/sft/qlora.yaml`, NF4 path in `training/sft.py`; bitsandbytes 4-bit needs CUDA, and non-CUDA devices fail fast by design |
-| Agentic RL (env, modular reward, REINFORCE actor-critic router) | **VERIFIED (small scale)** | `data/processed/rl/results.json`: 960 episodes, evaluated on 13 held-out questions vs heuristic and random; extractive writer inside rollouts (documented approximation) |
+| Agentic RL (env, modular reward, REINFORCE actor-critic router) | **VERIFIED (small scale)** | `data/processed/rl/results.json`: 960 episodes, evaluated on 13 held-out questions vs heuristic and random; extractive writer inside rollouts (documented approximation). On the 46-Q agent benchmark the learned router always makes exactly one search and is correct on the same questions as the fixed `agent_single_search` baseline, i.e. it learned "search once, then answer" |
 | Agentic RL: GRPO for the LLM router | **IMPLEMENTED, NOT FULLY EXECUTED** | `rl/grpo.py`, `scripts/train_grpo.py --smoke` executed: 2 GRPO steps on Qwen2.5-0.5B + LoRA (MPS), rewards from real env rollouts (mean reward 0.20 → -0.00; 2 steps show the pipeline works, not learning). A meaningful run needs a CUDA GPU |
 | FastAPI service (sync, async jobs, SSE, uploads, traces, metrics, rate limit) | **VERIFIED** | `tests/integration/test_api.py`; local load test in `benchmarks/results/system` |
 | vLLM | **CONFIGURED, REQUIRES EXTERNAL RESOURCE** | OpenAI-compatible client verified against mock transport and the bundled HF dev server (`atlas serve-model`); vLLM compose/K8s configs written; **no vLLM numbers measured** (needs NVIDIA GPU) |
@@ -46,6 +46,7 @@ Legend
 - Small benchmark (46 questions, 4 papers, one domain). Many ablation differences fall inside the 95% CIs.
 - Generator is a 1.5B local model. Several errors come from the generator misreading numbers that are correct in the retrieved context.
 - LLM routers (1.5B and 0.5B) rarely choose to stop and mostly end at the tool budget.
+- The RL router converged to a single-search strategy, matching a fixed single-search baseline question for question; the v1 benchmark has too few table/figure/compute questions to reward multi-tool routing.
 - RL and SFT runs are pipeline-scale (tens of questions / trajectories). They show direction, not general gains.
 - Table detection only handles ruled tables. SmolVLM-256M chart reading is unreliable.
 - Latencies were measured on a laptop GPU with other jobs sometimes running concurrently. Treat them as indicative only.

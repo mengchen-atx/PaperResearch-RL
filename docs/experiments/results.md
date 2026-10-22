@@ -30,6 +30,7 @@ Benchmark: `data/benchmarks/atlas_papers_v1.jsonl` — 46 questions over 4 arXiv
 | agent_heuristic | 46 | 67.4 (52.2–80.4) | 77.5 | 56.5 | 100.0 | 48.7 | 2.70 | 19.6 s / 34.8 s | 2006 |
 | agent_llm | 46 | 69.6 (56.5–82.6) | 68.3 | 65.2 | 100.0 | 70.0 | 5.52 | 31.2 s / 39.7 s | 5443 |
 | agent_learned | 46 | 67.4 (54.3–80.4) | 73.2 | 56.5 | 100.0 | 71.2 | 1.00 | 9.2 s / 12.1 s | 1435 |
+| agent_single_search | 46 | 67.4 (54.3–80.4) | 72.1 | 58.7 | 100.0 | 68.5 | 1.00 | 8.6 s / 10.9 s | 1441 |
 | agent_base05 | 46 | 58.7 (45.7–73.9) | 89.1 | 8.7 | 100.0 | 12.5 | 5.87 | 11.7 s / 17.0 s | 6075 |
 | agent_sft | 46 | 52.2 (37.0–67.4) | 83.3 | 28.3 | 100.0 | 32.1 | 5.91 | 15.5 s / 22.0 s | 5848 |
 
@@ -46,6 +47,7 @@ Benchmark: `data/benchmarks/atlas_papers_v1.jsonl` — 46 questions over 4 arXiv
 | agent_heuristic | 82.1 (n=28) | 50.0 (n=8) | 0.0 (n=4) | 75.0 (n=4) | 50.0 (n=2) |
 | agent_llm | 85.7 (n=28) | 50.0 (n=8) | 25.0 (n=4) | 50.0 (n=4) | 50.0 (n=2) |
 | agent_learned | 85.7 (n=28) | 50.0 (n=8) | 0.0 (n=4) | 75.0 (n=4) | 0.0 (n=2) |
+| agent_single_search | 85.7 (n=28) | 50.0 (n=8) | 0.0 (n=4) | 75.0 (n=4) | 0.0 (n=2) |
 | agent_base05 | 71.4 (n=28) | 37.5 (n=8) | 0.0 (n=4) | 75.0 (n=4) | 50.0 (n=2) |
 | agent_sft | 67.9 (n=28) | 37.5 (n=8) | 0.0 (n=4) | 50.0 (n=4) | 0.0 (n=2) |
 
@@ -59,6 +61,7 @@ _Required-tool recall: share of table/figure/compute questions where the matchin
 | agent_heuristic | 67.4 | 2.70 | 0.59 | 0.00 | 0.46 | 0.00 | 83.3 | 8.7 |
 | agent_llm | 69.6 | 5.52 | 0.89 | 2.35 | 0.26 | 0.30 | 41.7 | 93.5 |
 | agent_learned | 67.4 | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.0 | 0.0 |
+| agent_single_search | 67.4 | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.0 | 0.0 |
 | agent_base05 | 58.7 | 5.87 | 0.93 | 2.20 | 0.02 | 0.35 | 11.1 | 95.7 |
 | agent_sft | 52.2 | 5.91 | 1.11 | 2.57 | 0.00 | 0.00 | 0.0 | 97.8 |
 
@@ -77,6 +80,7 @@ _The SFT and learned (RL) systems must be compared on this split; the full-bench
 | agent_heuristic | 13 | 76.9 (53.8–100.0) | 2.77 |
 | agent_llm | 13 | 84.6 (61.5–100.0) | 5.69 |
 | agent_learned | 13 | 69.2 (38.5–92.3) | 1.00 |
+| agent_single_search | 13 | 69.2 (38.5–92.3) | 1.00 |
 | agent_base05 | 13 | 61.5 (38.5–84.6) | 5.77 |
 | agent_sft | 13 | 53.8 (23.1–76.9) | 6.00 |
 

@@ -24,7 +24,7 @@ OUT = ROOT / "docs" / "experiments" / "results.md"
 RETRIEVAL_ORDER = ["retrieval_dense", "retrieval_bm25", "retrieval_hybrid", "retrieval_hybrid_weighted",
                    "retrieval_dense_rerank", "retrieval_hybrid_rerank"]
 LADDER_ORDER = ["base_llm", "extractive_rag", "vanilla_rag", "hybrid_rag", "hybrid_rerank_rag",
-                "agent_text_only", "agent_heuristic", "agent_llm", "agent_learned", "agent_base05", "agent_sft"]
+                "agent_text_only", "agent_heuristic", "agent_llm", "agent_learned", "agent_single_search", "agent_base05", "agent_sft"]
 
 
 def load(name: str, root: Path = RESULTS) -> tuple[dict, list[dict]] | None:
@@ -97,7 +97,7 @@ def ladder_table(root: Path, order=LADDER_ORDER) -> list[str]:
     return lines
 
 
-AGENT_ORDER = ["agent_text_only", "agent_heuristic", "agent_llm", "agent_learned", "agent_base05", "agent_sft"]
+AGENT_ORDER = ["agent_text_only", "agent_heuristic", "agent_llm", "agent_learned", "agent_single_search", "agent_base05", "agent_sft"]
 
 
 def agent_table(root: Path) -> list[str]:

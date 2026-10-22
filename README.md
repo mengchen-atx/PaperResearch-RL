@@ -38,12 +38,13 @@ facts that live in tables or charts. Atlas is a working, measured answer to thes
 | Agent, text-only tools | 67.4% (54.3–80.4) | 1.93 | 11.5 s |
 | Agent, heuristic router, all tools | 67.4% (52.2–80.4) | 2.70 | 19.6 s |
 | Agent, LLM router | 69.6% (56.5–82.6) | 5.52 | 31.2 s |
-| **Agent, RL-learned router** | 67.4% (54.3–80.4) | **1.00** | **9.2 s** |
+| Agent, RL-learned router | 67.4% (54.3–80.4) | 1.00 | 9.2 s |
+| Agent, fixed single-search baseline (no RL) | 67.4% (54.3–80.4) | 1.00 | 8.6 s |
 
 | Component | Measured result |
 |---|---|
 | Retrieval Recall@5 | dense 81.5 → BM25 85.9 → hybrid 87.0 → hybrid + rerank 88.0 |
-| Agentic RL (13 held-out questions, same env) | learned router matches the heuristic's success (46.2%) with 1.00 vs 1.69 tool calls; random policy 30.8% |
+| Agentic RL (13 held-out questions, same env) | learned router matches the heuristic's success (46.2%) with 1.00 vs 1.69 tool calls (one search per episode, see below); random policy 30.8% |
 | SFT, LoRA on Qwen2.5-0.5B (31 held-out router steps) | valid JSON 71.0% → 100%, correct action 45.2% → 71.0%; **end-to-end not improved**: 52.2% vs 58.7% for the same 0.5B model without the adapter |
 | Inference, HF dev server on M4 (not vLLM) | TTFT 229 ms, 19.3 tok/s at c=1; no throughput gain at c=4 (no batching) |
 | API load test, /retrieve, 200 requests at c=8 | 13.2 req/s, 0 errors (p50 1 ms is cache hits; p95 1.8 s) |
@@ -51,8 +52,19 @@ facts that live in tables or charts. Atlas is a working, measured answer to thes
 **What these numbers say:**
 - Retrieval is the big win (10.9% → 63–70%).
 - Agents match, but do not beat, the best single-shot RAG on this benchmark.
-- RL cut tool calls by 63% and latency by 2× at the same accuracy.
+- The RL router does not beat a fixed "search once, then answer" pipeline (see below).
 - SFT taught the agent protocol but did not improve answers (see Limitations).
+
+**About the RL result.** The REINFORCE router reaches the heuristic router's accuracy (67.4% vs 67.4% on 46
+questions) with 1.00 vs 2.70 tool calls and 9.2 s vs 19.6 s p50 latency. But it does this by collapsing to a
+single `search_documents` call on every question: `required_tool_recall` is 0.0 in
+`benchmarks/results/agent_learned/summary.json`, so it never uses the table, SQL, or vision tools. On this
+benchmark one good hybrid + rerank search is usually enough, and the tool-cost penalty (`lambda_tool_cost` in
+`configs/rl/reinforce.yaml`) makes extra calls unprofitable. The fixed `agent_single_search` baseline (one search,
+then the writer, no learning) confirms this: it is correct on exactly the same 46 questions as the learned router
+(paired accuracy difference 0.0, bootstrap 95% CI [0.0, 0.0]; 42 of 46 answers are textually identical), at 8.6 s
+p50. So the learned policy is equivalent to that fixed pipeline here. Testing whether RL can learn *when* extra
+tools pay off needs a benchmark with many more table, arithmetic, and figure questions (roadmap).
 
 Full tables with 95% bootstrap CIs and a per-question-type breakdown: [`docs/experiments/results.md`](docs/experiments/results.md).
 Reproduce with `make benchmark`. One question is 2.2 points of accuracy, so read differences against the CIs.

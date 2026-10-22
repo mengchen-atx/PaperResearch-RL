@@ -29,6 +29,9 @@ V0 handwritten RAG ──► V1 advanced RAG ──► V2 LangGraph agent ──
 ## Next steps (not implemented)
 1. **Bigger, harder benchmark**: 200+ questions incl. multi-document synthesis, unanswerable questions (to measure
    abstention), chart-reading questions whose answers exist only in pixels.
+   Planned v2 (keeping v1 frozen): ~160 PDF-verified questions over 12–16 table/figure-heavy arXiv papers, about 40%
+   text / 25% table / 15% table + arithmetic / 10% figure / 10% cross-paper, so that multi-tool routing can pay off
+   for the RL router (which on v1 collapses to a single search), plus a separately reported Qasper subset.
 2. **Stronger judges**: NLI-based groundedness and an LLM-as-judge for answer correctness, calibrated against a
    human-labeled subset.
 3. **Real vLLM measurements** on a GPU host: TTFT / tokens/s / throughput vs. concurrency, prefix caching on/off,
