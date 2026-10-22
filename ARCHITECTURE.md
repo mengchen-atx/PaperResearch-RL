@@ -29,7 +29,7 @@ For what is verified vs. only configured, see [IMPLEMENTATION_STATUS.md](IMPLEME
       PDFs/MD/TXT ──► ingestion: text layer · tables (find_tables→SQLite) · figures (caption-anchored crops)
                       └► chunking (sentence packing, page-bounded) └► embeddings (bge-small) + BM25 postings
 
-  Every agent run ─► trajectory (JSONL) ─► quality filter ─► SFT (LoRA/QLoRA)  ─► adapter ─► hf_local / vLLM --enable-lora
+  Every agent run ─► trajectory (JSONL) ─► quality filter ─► SFT (LoRA/QLoRA)  ─► adapter ─► hf_local / vLLM --enable-lora [configured, not validated]
                                         └► RL env (same nodes/tools) ─► router policy (REINFORCE) / LLM router (GRPO)
   Observability: trace ids on every request, spans for agent nodes / tools / retrieval / LLM calls, Prometheus metrics.
 ```
@@ -196,7 +196,7 @@ example (grounded prompt → cited answer). Loss is on completion tokens only; t
 leakage).
 
 **LoRA** trains a low-rank update `W + (α/r)·BA` on attention/MLP projections — ~1–2% of parameters, trainable on
-a laptop, adapters are MBs and hot-swappable in vLLM (`--enable-lora`). **QLoRA** loads the frozen base in 4-bit
+a laptop, adapters are MBs and hot-swappable in vLLM (`--enable-lora`). **QLoRA** (configured, not validated — no CUDA GPU) loads the frozen base in 4-bit
 NF4 (bitsandbytes) to fit 7B-class models on one 24 GB GPU; it requires CUDA and fails fast elsewhere.
 We never train a foundation model from scratch — we post-train an existing open model.
 
@@ -227,6 +227,8 @@ signal without changing the optimal policy.
 
 ## 7. Serving: why vLLM, async jobs, and caching
 
+> vLLM status: configured, not validated (no GPU available). The serving path was run end to end against the HF dev server (`atlas serve-model`).
+
 * **vLLM** for production inference: continuous batching (new requests join in-flight batches instead of waiting),
   PagedAttention (KV cache in fixed-size blocks → little fragmentation → more concurrent sequences), prefix caching
   (agent prompts share long system/evidence prefixes), multi-LoRA serving for SFT adapters, tensor parallelism for
@@ -246,6 +248,8 @@ signal without changing the optimal policy.
 
 ## 8. Distributed architecture: why each piece exists
 
+> Status: configured, not validated (no GPU/cluster available). Everything below is design + manifests.
+
 | Component | Problem it solves | When to add it |
 |---|---|---|
 | API replicas + HPA (CPU) | request fan-in, embedding/rerank CPU load | >1 node or HA needed |
@@ -256,8 +260,8 @@ signal without changing the optimal policy.
 | Ingress (rate limit, long SSE timeouts) | gateway concerns out of the app | public exposure |
 
 Single-node mode (`atlas serve`, memory queue, FAISS, in-process workers) remains the default and is what the
-benchmarks ran on. The Kubernetes manifests are **configured and statically validated, not deployed** (no cluster
-was available); see IMPLEMENTATION_STATUS.md.
+benchmarks ran on. The Kubernetes manifests are **configured, not validated** (no cluster was available; only statically
+checked in tests); see IMPLEMENTATION_STATUS.md.
 
 ## 9. Observability
 Every request gets an `X-Request-ID` which is the trace id; spans are recorded for the request, each agent node,

@@ -7,7 +7,7 @@ GPU, no Docker daemon, no Kubernetes cluster, no hosted-LLM API keys.** Local mo
 Legend
 - **VERIFIED**: implemented and executed end to end here, with tests and/or benchmark output in the repo.
 - **IMPLEMENTED, NOT FULLY EXECUTED**: code complete and exercised by tests or a smoke run, but the full-scale run was not performed.
-- **CONFIGURED, REQUIRES EXTERNAL RESOURCE**: config and code exist; running it needs hardware or services not available here.
+- **CONFIGURED, REQUIRES EXTERNAL RESOURCE** (not validated): config and code exist; running it needs hardware or services not available here.
 - **NOT IMPLEMENTED**
 
 | Component | Status | Evidence / notes |

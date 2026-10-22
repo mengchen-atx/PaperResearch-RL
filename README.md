@@ -76,11 +76,11 @@ question ─► FastAPI ─► LangGraph agent
                                      │        └─ search_web : Wikipedia / Tavily (off by default)
                                      └─ policy: heuristic | LLM (JSON actions) | learned (RL)
 
-every run ─► trajectory JSONL ─► quality filter ─► SFT (LoRA / QLoRA) ─► adapter (hf_local or vLLM --enable-lora)
+every run ─► trajectory JSONL ─► quality filter ─► SFT (LoRA / QLoRA) ─► adapter (hf_local, or vLLM --enable-lora [configured, not validated])
                                └► RL env built on the same nodes and tools ─► router policy (REINFORCE) / LLM router (GRPO)
 
 serving: sync + async jobs (memory | Redis queue + workers), SSE progress, trace ids, Prometheus, rate limiting
-deploy : Docker Compose (api, workers, redis, qdrant, vLLM) · Kubernetes (HPA, KEDA workers, GPU vLLM, ingress)
+deploy : Docker Compose (api, workers, redis, qdrant, vLLM) · Kubernetes (HPA, KEDA workers, GPU vLLM, ingress) [configured, not validated]
 ```
 
 The "why" behind every component, with alternatives and tradeoffs, is in **[ARCHITECTURE.md](ARCHITECTURE.md)**.
@@ -98,10 +98,10 @@ Milestones: [ROADMAP.md](ROADMAP.md).
 | LangChain interop | `AtlasRetriever` (a `BaseRetriever`) and `StructuredTool` wrappers for every Atlas tool (`atlas/integrations/langchain.py`): the hand-written stack plugs into any LangChain/LangGraph app | Verified (tests + real index) |
 | Agent | LangGraph state machine, 7-action tool space, 3 interchangeable policies, critic loop, budgets, dedupe memory, fallbacks | Verified |
 | Evaluation | PDF-verified benchmark; retrieval, answer, groundedness, citation, agent, and system metrics; bootstrap CIs | Verified |
-| Post-training | trajectory schema/validation/filtering, trajectory → SFT data, TRL + PEFT LoRA, QLoRA path, base-vs-adapter eval | LoRA verified at small scale; QLoRA needs CUDA |
+| Post-training | trajectory schema/validation/filtering, trajectory → SFT data, TRL + PEFT LoRA, QLoRA path, base-vs-adapter eval | LoRA verified at small scale; QLoRA: Configured, not validated (no GPU/cluster available) |
 | Agentic RL | MDP over the production nodes, modular reward with potential shaping, actor-critic REINFORCE, GRPO entry point | Router RL verified at small scale |
-| Serving | FastAPI sync/async/SSE, job queue (memory/Redis), worker, uploads, traces, metrics, OpenAI-compatible client, dev model server | Verified locally; vLLM configured |
-| Deployment | Dockerfile, Compose, Kubernetes manifests (HPA, KEDA, GPU vLLM, StatefulSets, ingress) | Configured, statically validated |
+| Serving | FastAPI sync/async/SSE, job queue (memory/Redis), worker, uploads, traces, metrics, OpenAI-compatible client, dev model server | Verified locally; vLLM: Configured, not validated (no GPU/cluster available) |
+| Deployment | Dockerfile, Compose, Kubernetes manifests (HPA, KEDA, GPU vLLM, StatefulSets, ingress) | Configured, not validated (no GPU/cluster available); manifests statically checked in tests |
 
 ---
 
@@ -163,7 +163,7 @@ curl -N localhost:8000/research/<id>/events
 ### Use a different model provider
 
 ```bash
-ATLAS__LLM__PROVIDER=openai_compatible ATLAS__LLM__BASE_URL=http://gpu-host:8000/v1 ATLAS__LLM__MODEL=Qwen/Qwen2.5-7B-Instruct python -m atlas ask "..."   # vLLM
+ATLAS__LLM__PROVIDER=openai_compatible ATLAS__LLM__BASE_URL=http://gpu-host:8000/v1 ATLAS__LLM__MODEL=Qwen/Qwen2.5-7B-Instruct python -m atlas ask "..."   # vLLM — configured, not validated
 ATLAS__LLM__PROVIDER=anthropic ATLAS__LLM__MODEL=claude-haiku-4-5 ANTHROPIC_API_KEY=... python -m atlas ask "..."
 ATLAS__LLM__PROVIDER=extractive python -m atlas ask "..."   # no LLM: extractive baseline, fully offline
 ```
@@ -188,8 +188,8 @@ to SQLite, so arithmetic is exact. Figure crops are located via their captions (
 a VLM is called only when a question needs pixels.
 
 **Post-training.** The agent's own successful, citation-valid trajectories become SFT data: router steps are
-rebuilt with the exact evidence prefix, plus writer examples. Training uses LoRA on a small Qwen model, with QLoRA
-for 7B-class models on CUDA. Evaluation compares action accuracy on held-out trajectories.
+rebuilt with the exact evidence prefix, plus writer examples. Training uses LoRA on a small Qwen model, with a QLoRA
+path for 7B-class models on CUDA (configured, not validated). Evaluation compares action accuracy on held-out trajectories.
 
 **Agentic RL.** The MDP's transitions *are* the production node functions, so a trained policy runs unchanged in
 the agent. The reward is task success + citation precision + potential-shaped evidence recall − tool cost − steps.
@@ -197,12 +197,12 @@ The router is trained with REINFORCE plus a learned baseline. A GRPO path exists
 
 **Serving.** Research runs are async jobs (202 + SSE) backed by an in-process queue or by Redis plus workers
 (idempotency keys, at-least-once delivery, bounded retries, graceful shutdown). Caching covers retrieval,
-temperature-0 LLM calls, and embeddings. vLLM sits behind an OpenAI-compatible client. Every request carries a
+temperature-0 LLM calls, and embeddings. vLLM would sit behind the same OpenAI-compatible client (configured, not validated; locally an HF dev server stands in). Every request carries a
 trace id, and spans cover nodes, tools, retrieval, and LLM calls.
 
 **Distributed.** API replicas scale on CPU (HPA). Workers scale on queue depth (KEDA), because they mostly wait on
 inference. vLLM runs one GPU per replica, with prefix caching and multi-LoRA. Qdrant serves shared vector search.
-The ingress handles rate limiting and SSE timeouts. The system is configured and validated, not deployed.
+The ingress handles rate limiting and SSE timeouts. All of this is configured, not validated (no GPU/cluster available); manifests are only statically checked.
 
 ---
 
@@ -242,7 +242,7 @@ make results                      # regenerate docs/experiments/results.md
 make benchmark-agent                                   # collect evaluated trajectories
 python -m atlas trajectories validate data/trajectories/agent_heuristic.jsonl
 python scripts/train_sft.py -c configs/sft/lora.yaml   # LoRA SFT + base-vs-adapter eval (MPS/CPU/CUDA)
-python scripts/train_sft.py -c configs/sft/qlora.yaml  # QLoRA, 7B, needs CUDA
+python scripts/train_sft.py -c configs/sft/qlora.yaml  # QLoRA, 7B, needs CUDA — configured, not validated
 python scripts/train_rl.py -c configs/rl/reinforce.yaml   # router policy RL (CPU/MPS, minutes)
 python scripts/train_grpo.py --smoke                   # GRPO pipeline check; full runs need a GPU
 python scripts/run_benchmark.py configs/experiments/agent_sft.yaml configs/experiments/agent_learned.yaml
@@ -253,7 +253,7 @@ python scripts/run_benchmark.py configs/experiments/agent_sft.yaml configs/exper
 ```bash
 python -m atlas serve-model --port 8001                # OpenAI-compatible HF server (vLLM stand-in)
 python scripts/bench_inference.py --base-url http://127.0.0.1:8001/v1 --concurrency 4
-docker compose -f docker/docker-compose.yml --profile gpu up   # vLLM + api + workers + redis + qdrant (GPU host)
+docker compose -f docker/docker-compose.yml --profile gpu up   # vLLM + api + workers + redis + qdrant (GPU host) — configured, not validated
 python scripts/bench_inference.py --base-url http://localhost:8001/v1 --model Qwen/Qwen2.5-7B-Instruct --concurrency 16
 python scripts/run_system_benchmark.py --endpoint retrieve --concurrency 8 --requests 200
 kubectl apply -k deployment/kubernetes                 # requires a cluster (+ KEDA, GPU nodes)

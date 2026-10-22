@@ -4,13 +4,15 @@
 `atlas serve` → FastAPI + in-process job workers (memory queue) + FAISS index + local or remote LLM.
 `atlas serve-model` → OpenAI-compatible HF-transformers server (vLLM stand-in on non-NVIDIA machines).
 
-## Distributed (configured, statically validated)
+## Distributed (configured, not validated — no GPU/cluster available; manifests statically checked)
 `docker/docker-compose.yml` (api, 2 workers, redis, qdrant, vLLM under the `gpu` profile) and
 `deployment/kubernetes/` (Deployments/StatefulSets with requests/limits and probes, HPA for the API, KEDA
 ScaledObject for workers on Redis queue depth, vLLM with 1 GPU/replica, RWX volume for the index, ingress with
 rate limiting and SSE-friendly timeouts, secrets via Secret objects).
 
 ## vLLM notes
+> Status: configured, not validated (no GPU available). No vLLM numbers were measured.
+
 * `--gpu-memory-utilization 0.9`: fraction of VRAM for weights + KV cache; the remainder is headroom.
 * KV cache: PagedAttention allocates KV in blocks, so memory scales with *actual* tokens in flight; max concurrency
   is bounded by `--max-num-seqs` and free KV blocks. Long evidence prompts (~1.2k tokens here) × concurrent

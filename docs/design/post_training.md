@@ -16,6 +16,8 @@ q/k/v/o and MLP projections (r=16, α=32); cosine schedule; fp32 on MPS/CPU, bf1
 tokenizer; metrics + log history in `train_metrics.json`.
 
 ## QLoRA
+> Status: configured, not validated (no CUDA GPU available).
+
 `qlora: true` → 4-bit NF4 base with double quantization, bf16 compute, `prepare_model_for_kbit_training`.
 bitsandbytes 4-bit kernels need CUDA; on other devices training fails fast with an actionable error.
 `configs/sft/qlora.yaml` targets Qwen2.5-7B-Instruct on a single 24 GB GPU.
@@ -26,4 +28,4 @@ End-to-end: `configs/experiments/agent_sft.yaml` runs the agent with the adapter
 
 ## Serving the adapter
 * Local: `llm.provider=hf_local`, `llm.adapter_path=data/processed/sft/adapter`.
-* vLLM: `--enable-lora --lora-modules atlas-sft=/adapters/sft`, then `llm.model=atlas-sft`.
+* vLLM (configured, not validated): `--enable-lora --lora-modules atlas-sft=/adapters/sft`, then `llm.model=atlas-sft`.
