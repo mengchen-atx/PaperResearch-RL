@@ -1,5 +1,7 @@
 # Atlas — Multimodal Agentic Research System
 
+[![CI](https://github.com/mengchen-atx/PaperResearch-RL/actions/workflows/ci.yml/badge.svg)](https://github.com/mengchen-atx/PaperResearch-RL/actions/workflows/ci.yml)
+
 Atlas answers research questions over document collections (PDFs, text, tables, charts). It plans, retrieves,
 calls tools, checks whether it has enough evidence, iterates, and writes a report with page-level citations that
 are checked against the sources. It also closes the loop for model improvement: every agent run becomes a
