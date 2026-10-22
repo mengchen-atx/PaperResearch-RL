@@ -117,13 +117,26 @@ Milestones: [ROADMAP.md](ROADMAP.md).
 
 ---
 
-## Quick start
+## Quickstart (CPU only, ~2 minutes, no model downloads)
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+make quickstart PY=python       # 4 arXiv PDFs -> index -> one cited RAG answer -> one agent run
+pytest tests -m "not slow"      # ~10 s, fully offline
+```
+
+This uses a hashing embedder and an extractive answerer (no LLM), so answers only show retrieval quality. It
+writes to its own index (`data/processed/quickstart_index`). Headline numbers use bge-small, the cross-encoder,
+and Qwen2.5-1.5B: run the full setup below, then `make benchmark`.
+
+## Quick start (full models)
 
 Requirements: Python 3.11+, [uv](https://docs.astral.sh/uv/), about 6 GB of disk for models. A GPU is optional
 (CUDA or Apple MPS are used when present).
 
 ```bash
-make setup      # venv + dependencies (train, vision, dev extras)
+make setup      # uv venv + `pip install -e ".[train,vision,dev]"` (dev extra is needed for pytest)
 make data       # downloads 4 public arXiv papers (v1) and builds + verifies the benchmark
 make ingest     # atlas ingest data/raw  → 4 docs → 426 text / 12 table / 37 figure chunks
 make test       # offline test suite (no model downloads)
