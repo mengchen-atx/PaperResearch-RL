@@ -54,7 +54,7 @@ class AskResponse(BaseModel):
 
 class ResearchRequest(Strict):
     query: str = Field(min_length=3, max_length=2000)
-    policy: Literal["heuristic", "llm", "learned"] | None = None
+    policy: Literal["heuristic", "llm", "learned", "single_search"] | None = None
     mode: Literal["sync", "async"] = "async"
 
 

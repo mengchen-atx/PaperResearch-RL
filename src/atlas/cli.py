@@ -200,7 +200,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = sub.add_parser("research", help="run the research agent")
     s.add_argument("question")
-    s.add_argument("--policy", choices=["heuristic", "llm", "learned"])
+    s.add_argument("--policy", choices=["heuristic", "llm", "learned", "single_search"])
     s.add_argument("--json", action="store_true")
     s.set_defaults(fn=cmd_research)
 

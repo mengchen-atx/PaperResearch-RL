@@ -5,6 +5,8 @@
   * LLMPolicy       — the LLM reads the state and emits a JSON action (ReAct-style
     routing). Invalid/unavailable actions fall back to the heuristic and the
     fallback is recorded (a measurable agent metric).
+  * SingleSearchPolicy — fixed "search once, then answer" pipeline. A control for
+    the learned router, which converges to this behaviour on the v1 benchmark.
   * LearnedPolicy   — an MLP over `featurize(state)` trained with policy-gradient
     RL in `atlas.rl`. Loaded from a checkpoint; greedy at inference.
 """
@@ -58,6 +60,16 @@ class HeuristicPolicy:
             if mask[Action.SEARCH_WEB] and counts[Action.SEARCH_WEB] == 0:
                 return pick(Action.SEARCH_WEB, "local corpus insufficient; try the web")
         return pick(Action.ANSWER, "evidence judged sufficient or options exhausted")
+
+
+class SingleSearchPolicy:
+    name = "single_search"
+
+    def decide(self, state: ResearchState, caps: Capabilities) -> Decision:
+        if action_counts(state)[Action.SEARCH_DOCUMENTS] == 0:
+            return Decision(action=Action.SEARCH_DOCUMENTS, rationale="fixed baseline: one search",
+                            policy=self.name)
+        return Decision(action=Action.ANSWER, rationale="fixed baseline: answer after one search", policy=self.name)
 
 
 class LLMPolicy:

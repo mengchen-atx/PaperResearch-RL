@@ -3,7 +3,7 @@ import time
 from atlas.agents.actions import ACTIONS, Action, query_cues, term_coverage
 from atlas.agents.features import FEATURE_DIM, Capabilities, action_mask, featurize
 from atlas.agents.nodes import heuristic_plan, select_evidence
-from atlas.agents.policies import HeuristicPolicy, LLMPolicy
+from atlas.agents.policies import HeuristicPolicy, LLMPolicy, SingleSearchPolicy
 from atlas.agents.state import initial_state
 from atlas.common.types import Evidence, Modality
 from atlas.llm.base import LLMClient, LLMResponse
@@ -47,6 +47,14 @@ def test_heuristic_policy_sequence():
     assert p.decide(s, CAPS).action == Action.LOOKUP_TABLE
     s["decisions"] = [{"action": "search_documents"}, {"action": "lookup_table"}]
     s["sufficient"] = True
+    assert p.decide(s, CAPS).action == Action.ANSWER
+
+
+def test_single_search_policy_searches_once_then_answers():
+    p = SingleSearchPolicy()
+    s = state()
+    assert p.decide(s, CAPS).action == Action.SEARCH_DOCUMENTS
+    s = state(evidence=[ev(1)], decisions=[{"action": "search_documents"}])  # table cue present, still answers
     assert p.decide(s, CAPS).action == Action.ANSWER
 
 

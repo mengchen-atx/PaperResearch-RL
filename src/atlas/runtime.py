@@ -14,7 +14,7 @@ from pathlib import Path
 from atlas.agents.features import Capabilities
 from atlas.agents.graph import ResearchAgent
 from atlas.agents.nodes import AgentContext
-from atlas.agents.policies import HeuristicPolicy, LearnedPolicy, LLMPolicy, Policy
+from atlas.agents.policies import HeuristicPolicy, LearnedPolicy, LLMPolicy, Policy, SingleSearchPolicy
 from atlas.common.cache import Cache, build_cache
 from atlas.common.config import AtlasConfig
 from atlas.common.types import Modality
@@ -124,6 +124,8 @@ class AtlasRuntime:
         if name == "learned":
             return LearnedPolicy(self.cfg.resolve_path(self.cfg.agent.learned_policy_path),
                                  self.cfg.agent.max_iterations, self.cfg.agent.max_tool_calls)
+        if name == "single_search":
+            return SingleSearchPolicy()
         return HeuristicPolicy()
 
     def agent(self, policy: str | None = None) -> ResearchAgent:

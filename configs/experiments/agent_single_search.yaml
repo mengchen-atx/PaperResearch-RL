@@ -1,0 +1,2 @@
+experiment: {name: agent_single_search, system: agent, policy: single_search, description: "Fixed baseline: one search_documents call, then writer (no RL)"}
+agent: {policy: single_search, planner: llm}

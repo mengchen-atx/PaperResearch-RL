@@ -119,7 +119,7 @@ class MultimodalConfig(Section):
 
 
 class AgentConfig(Section):
-    policy: Literal["llm", "heuristic", "learned"] = "heuristic"
+    policy: Literal["llm", "heuristic", "learned", "single_search"] = "heuristic"
     learned_policy_path: str = "data/processed/rl/policy.pt"
     max_iterations: int = Field(4, gt=0)
     max_tool_calls: int = Field(10, gt=0)
