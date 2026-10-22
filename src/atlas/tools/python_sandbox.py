@@ -17,6 +17,7 @@ deployment should run this tool in a gVisor/Firecracker/nsjail container.
 from __future__ import annotations
 
 import ast
+import signal
 import subprocess
 import sys
 import tempfile
@@ -104,6 +105,8 @@ class RunPython(Tool):
                 )
             except subprocess.TimeoutExpired as exc:
                 raise ToolError(f"Python timed out after {self.cfg.python_timeout_s}s") from exc
+        if proc.returncode == -signal.SIGXCPU:  # RLIMIT_CPU fired before the wall clock (Linux)
+            raise ToolError(f"Python timed out (CPU limit {self.cfg.python_timeout_s}s)")
         if proc.returncode != 0:
             err = proc.stderr.strip().splitlines()[-1] if proc.stderr.strip() else f"exit code {proc.returncode}"
             return ToolResult(tool=self.name, ok=False, error=err[:500], output=proc.stdout[:MAX_OUTPUT_CHARS])
