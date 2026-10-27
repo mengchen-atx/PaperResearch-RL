@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+title: "Atlas: a multimodal agentic research system"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: Chen
+    given-names: Meng
+repository-code: "https://github.com/mengchen-atx/PaperResearch-RL"
+url: "https://github.com/mengchen-atx/PaperResearch-RL"
+license: MIT
+version: 0.1.0
+keywords:
+  - retrieval-augmented-generation
+  - langgraph
+  - reinforcement-learning
+  - lora
+  - multimodal
+abstract: >-
+  Hand-built hybrid RAG and a LangGraph research agent with page-level
+  citations, a 46-question benchmark with confidence intervals, LoRA
+  supervised fine-tuning on agent trajectories, a REINFORCE tool router,
+  and a FastAPI service.

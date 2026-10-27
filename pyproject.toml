@@ -5,10 +5,27 @@ build-backend = "hatchling.build"
 [project]
 name = "atlas-research"
 version = "0.1.0"
-description = "Atlas: a multimodal agentic research system — RAG, LangGraph agent, evaluation, post-training, agentic RL, and serving."
+description = "Hand-built hybrid RAG, a LangGraph research agent with page-level citations, a verified benchmark, LoRA SFT, a REINFORCE tool router, and FastAPI serving."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
+authors = [{ name = "Meng Chen" }]
+keywords = [
+  "rag",
+  "llm-agents",
+  "langgraph",
+  "reinforcement-learning",
+  "retrieval-augmented-generation",
+  "multimodal",
+  "lora",
+  "fastapi",
+]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Operating System :: OS Independent",
+]
 dependencies = [
   # --- core / RAG ---
   "numpy>=1.26,<3",
@@ -50,6 +67,13 @@ dev = [
   "ruff>=0.6",
   "matplotlib>=3.8",
 ]
+
+[project.urls]
+Homepage = "https://github.com/mengchen-atx/PaperResearch-RL"
+Repository = "https://github.com/mengchen-atx/PaperResearch-RL"
+Documentation = "https://github.com/mengchen-atx/PaperResearch-RL/blob/main/ARCHITECTURE.md"
+Changelog = "https://github.com/mengchen-atx/PaperResearch-RL/blob/main/CHANGELOG.md"
+Issues = "https://github.com/mengchen-atx/PaperResearch-RL/issues"
 
 [project.scripts]
 atlas = "atlas.cli:main"

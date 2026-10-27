@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="680" viewBox="0 0 1280 680" role="img">
+<title>Atlas agent and retrieval flow</title>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+<path d="M 0 1.2 L 10 5 L 0 8.8 z" fill="#57534e"/></marker>
+<marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+<path d="M 0 1.2 L 10 5 L 0 8.8 z" fill="#1d4ed8"/></marker>
+</defs>
+<rect width="1280" height="680" fill="#f7f6f3"/>
+<style>text{font-family:Inter,ui-sans-serif,sans-serif}</style>
+<rect x="20" y="16" width="360" height="456" rx="16" fill="#ffffff" stroke="#e7e5e4"/>
+<text x="38" y="44" fill="#78716c" font-size="12" font-weight="600" letter-spacing="0.08em">KNOWLEDGE</text>
+<rect x="40" y="56" width="320" height="52" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="52" y="78" fill="#1c1917" font-size="13" font-weight="600">PDF, Markdown, TXT</text>
+<text x="52" y="96" fill="#57534e" font-size="11">arXiv papers in the benchmark</text>
+<rect x="40" y="128" width="320" height="52" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="52" y="150" fill="#1c1917" font-size="13" font-weight="600">PyMuPDF ingest</text>
+<text x="52" y="168" fill="#57534e" font-size="11">text layer · ruled tables · figure crops</text>
+<rect x="40" y="200" width="320" height="52" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="52" y="222" fill="#1c1917" font-size="13" font-weight="600">Page-bounded chunks</text>
+<text x="52" y="240" fill="#57534e" font-size="11">sentence packing, overlap, one page each</text>
+<rect x="40" y="272" width="98" height="58" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="52" y="294" fill="#1c1917" font-size="13" font-weight="600">Text</text>
+<text x="52" y="312" fill="#57534e" font-size="11">chunks</text>
+<rect x="151" y="272" width="98" height="58" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="163" y="294" fill="#1c1917" font-size="13" font-weight="600">Tables</text>
+<text x="163" y="312" fill="#57534e" font-size="11">SQLite rows</text>
+<rect x="262" y="272" width="98" height="58" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="274" y="294" fill="#1c1917" font-size="13" font-weight="600">Figures</text>
+<text x="274" y="312" fill="#57534e" font-size="11">PNG + caption</text>
+<rect x="40" y="354" width="320" height="92" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="52" y="376" fill="#1c1917" font-size="13" font-weight="600">Indexed for retrieval</text>
+<text x="52" y="394" fill="#57534e" font-size="11">BM25 postings and bge vectors. Chunk row i is vector i.</text>
+<line x1="200" y1="108" x2="200" y2="128" stroke="#57534e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<line x1="200" y1="180" x2="200" y2="200" stroke="#57534e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<line x1="200" y1="252" x2="200" y2="272" stroke="#57534e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<line x1="89" y1="330" x2="160" y2="354" stroke="#57534e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<line x1="200" y1="330" x2="200" y2="354" stroke="#57534e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<line x1="311" y1="330" x2="240" y2="354" stroke="#57534e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<rect x="396" y="16" width="360" height="456" rx="16" fill="#ffffff" stroke="#e7e5e4"/>
+<text x="414" y="44" fill="#78716c" font-size="12" font-weight="600" letter-spacing="0.08em">RETRIEVAL</text>
+<rect x="416" y="56" width="150" height="64" rx="10" fill="#f0fdfa" stroke="#99f6e4"/>
+<text x="428" y="78" fill="#0f766e" font-size="13" font-weight="600">BM25</text>
+<text x="428" y="96" fill="#57534e" font-size="11">exact tokens</text>
+<rect x="586" y="56" width="150" height="64" rx="10" fill="#eff6ff" stroke="#bfdbfe"/>
+<text x="598" y="78" fill="#1d4ed8" font-size="13" font-weight="600">Dense</text>
+<text x="598" y="96" fill="#57534e" font-size="11">bge · FAISS / Qdrant</text>
+<rect x="416" y="156" width="320" height="58" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="428" y="178" fill="#1c1917" font-size="13" font-weight="600">Fusion</text>
+<text x="428" y="196" fill="#57534e" font-size="11">RRF (default) or weighted min-max</text>
+<rect x="416" y="248" width="320" height="58" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="428" y="270" fill="#1c1917" font-size="13" font-weight="600">Cross-encoder rerank</text>
+<text x="428" y="288" fill="#57534e" font-size="11">optional · top 30 candidates → top 5</text>
+<rect x="416" y="340" width="320" height="106" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="428" y="362" fill="#1c1917" font-size="13" font-weight="600">search_documents</text>
+<text x="428" y="380" fill="#57534e" font-size="11">The only retriever entry point for RAG and the agent. Metadata filters apply before scoring.</text>
+<line x1="491" y1="120" x2="540" y2="156" stroke="#57534e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<line x1="661" y1="120" x2="612" y2="156" stroke="#57534e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<line x1="576" y1="214" x2="576" y2="248" stroke="#57534e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<line x1="576" y1="306" x2="576" y2="340" stroke="#57534e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<rect x="772" y="16" width="488" height="456" rx="16" fill="#ffffff" stroke="#e7e5e4"/>
+<text x="790" y="44" fill="#78716c" font-size="12" font-weight="600" letter-spacing="0.08em">LANGGRAPH AGENT</text>
+<rect x="860" y="48" width="220" height="48" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="872" y="70" fill="#1c1917" font-size="13" font-weight="600">planner</text>
+<text x="872" y="88" fill="#57534e" font-size="11">at most 3 sub-questions</text>
+<rect x="860" y="128" width="220" height="52" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="872" y="150" fill="#1c1917" font-size="13" font-weight="600">router</text>
+<text x="872" y="168" fill="#57534e" font-size="11">heuristic · LLM JSON · learned</text>
+<rect x="1112" y="128" width="128" height="52" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="1124" y="150" fill="#1c1917" font-size="13" font-weight="600">writer</text>
+<text x="1124" y="168" fill="#57534e" font-size="11">answer or budget</text>
+<rect x="860" y="214" width="220" height="64" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="872" y="236" fill="#1c1917" font-size="13" font-weight="600">act</text>
+<text x="872" y="254" fill="#57534e" font-size="11">one tool, then the critic</text>
+<rect x="860" y="312" width="220" height="52" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="872" y="334" fill="#1c1917" font-size="13" font-weight="600">critic</text>
+<text x="872" y="352" fill="#57534e" font-size="11">loops back to the router</text>
+<rect x="800" y="388" width="430" height="64" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="812" y="410" fill="#1c1917" font-size="13" font-weight="600">Router chooses the edge</text>
+<text x="812" y="428" fill="#57534e" font-size="11">tool → act · replan → planner · answer or budget → writer</text>
+<line x1="970" y1="96" x2="970" y2="128" stroke="#57534e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<line x1="1080" y1="154" x2="1112" y2="154" stroke="#0f766e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<line x1="970" y1="180" x2="970" y2="214" stroke="#57534e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<line x1="970" y1="278" x2="970" y2="312" stroke="#57534e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<path d="M 860 338 L 804 338 L 804 170 L 860 170" fill="none" stroke="#0f766e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<path d="M 860 142 L 784 142 L 784 72 L 860 72" fill="none" stroke="#0f766e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<text x="808" y="260" fill="#0f766e" font-size="11">critic</text>
+<text x="788" y="108" fill="#0f766e" font-size="11">replan</text>
+<rect x="20" y="488" width="1240" height="172" rx="16" fill="#ffffff" stroke="#e7e5e4"/>
+<text x="38" y="516" fill="#78716c" font-size="12" font-weight="600" letter-spacing="0.08em">TRAJECTORY → SFT / RL</text>
+<rect x="40" y="534" width="200" height="64" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="52" y="556" fill="#1c1917" font-size="13" font-weight="600">Every agent run</text>
+<text x="52" y="574" fill="#57534e" font-size="11">trajectory JSONL</text>
+<rect x="270" y="534" width="200" height="64" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="282" y="556" fill="#1c1917" font-size="13" font-weight="600">Quality filter</text>
+<text x="282" y="574" fill="#57534e" font-size="11">correct + valid citations</text>
+<rect x="500" y="534" width="250" height="64" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="512" y="556" fill="#1c1917" font-size="13" font-weight="600">SFT LoRA</text>
+<text x="512" y="574" fill="#57534e" font-size="11">verified, small scale · QLoRA not validated</text>
+<rect x="780" y="534" width="250" height="64" rx="10" fill="#f7f6f3" stroke="#e7e5e4"/>
+<text x="792" y="556" fill="#1c1917" font-size="13" font-weight="600">REINFORCE router</text>
+<text x="792" y="574" fill="#57534e" font-size="11">verified, small scale · GRPO smoke only</text>
+<line x1="240" y1="566" x2="270" y2="566" stroke="#57534e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<line x1="470" y1="566" x2="500" y2="566" stroke="#57534e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<line x1="750" y1="566" x2="780" y2="566" stroke="#57534e" stroke-width="1.4" marker-end="url(#arrow)"/>
+<text x="40" y="612" fill="#57534e" font-size="11">Adapter and learned policy load into the router. read_document and query_sql are registered tools, not router actions. search_web is off by default.</text>
+</svg>
