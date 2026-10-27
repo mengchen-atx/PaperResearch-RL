@@ -1,0 +1,229 @@
+{
+  "headline": [
+    {
+      "name": "base_llm",
+      "description": "Closed-book LLM (no retrieval)",
+      "source": "benchmarks/results/base_llm/summary.json",
+      "records": "benchmarks/results/base_llm/records.jsonl",
+      "n": 46,
+      "accuracy": 0.10869565217391304,
+      "ci_low": 0.021739130434782608,
+      "ci_high": 0.1956521739130435,
+      "tool_calls": null,
+      "latency_p50_ms": 1449.784374795854,
+      "llm": "Qwen/Qwen2.5-1.5B-Instruct",
+      "device": "mps",
+      "platform": "macOS-26.5.1-arm64-arm-64bit",
+      "timestamp": "2026-09-29T00:22:41"
+    },
+    {
+      "name": "extractive_rag",
+      "description": "No-LLM floor: hybrid+rerank retrieval, extractive answerer",
+      "source": "benchmarks/results/extractive_rag/summary.json",
+      "records": "benchmarks/results/extractive_rag/records.jsonl",
+      "n": 46,
+      "accuracy": 0.41304347826086957,
+      "ci_low": 0.2826086956521739,
+      "ci_high": 0.5434782608695652,
+      "tool_calls": null,
+      "latency_p50_ms": 167.20141610130668,
+      "llm": "extractive",
+      "device": "mps",
+      "platform": "macOS-26.5.1-arm64-arm-64bit",
+      "timestamp": "2026-09-29T00:21:25"
+    },
+    {
+      "name": "vanilla_rag",
+      "description": "Vanilla RAG: dense top-5, no reranker",
+      "source": "benchmarks/results/vanilla_rag/summary.json",
+      "records": "benchmarks/results/vanilla_rag/records.jsonl",
+      "n": 46,
+      "accuracy": 0.6304347826086957,
+      "ci_low": 0.5,
+      "ci_high": 0.7608695652173914,
+      "tool_calls": null,
+      "latency_p50_ms": 9517.092229332775,
+      "llm": "Qwen/Qwen2.5-1.5B-Instruct",
+      "device": "mps",
+      "platform": "macOS-26.5.1-arm64-arm-64bit",
+      "timestamp": "2026-09-29T00:30:57"
+    },
+    {
+      "name": "hybrid_rag",
+      "description": "Hybrid RAG: BM25 + dense RRF top-5, no reranker",
+      "source": "benchmarks/results/hybrid_rag/summary.json",
+      "records": "benchmarks/results/hybrid_rag/records.jsonl",
+      "n": 46,
+      "accuracy": 0.5869565217391305,
+      "ci_low": 0.43478260869565216,
+      "ci_high": 0.717391304347826,
+      "tool_calls": null,
+      "latency_p50_ms": 5448.376290965825,
+      "llm": "Qwen/Qwen2.5-1.5B-Instruct",
+      "device": "mps",
+      "platform": "macOS-26.5.1-arm64-arm-64bit",
+      "timestamp": "2026-09-29T00:37:51"
+    },
+    {
+      "name": "hybrid_rerank_rag",
+      "description": "Hybrid RAG + cross-encoder reranker, top-5",
+      "source": "benchmarks/results/hybrid_rerank_rag/summary.json",
+      "records": "benchmarks/results/hybrid_rerank_rag/records.jsonl",
+      "n": 46,
+      "accuracy": 0.6956521739130435,
+      "ci_low": 0.5652173913043478,
+      "ci_high": 0.8260869565217391,
+      "tool_calls": null,
+      "latency_p50_ms": 5336.468521505594,
+      "llm": "Qwen/Qwen2.5-1.5B-Instruct",
+      "device": "mps",
+      "platform": "macOS-26.5.1-arm64-arm-64bit",
+      "timestamp": "2026-09-29T00:44:20"
+    },
+    {
+      "name": "agent_text_only",
+      "description": "Agent ablation: no VLM, no tables/SQL, no Python (text retrieval only)",
+      "source": "benchmarks/results/agent_text_only/summary.json",
+      "records": "benchmarks/results/agent_text_only/records.jsonl",
+      "n": 46,
+      "accuracy": 0.6739130434782609,
+      "ci_low": 0.5434782608695652,
+      "ci_high": 0.8043478260869565,
+      "tool_calls": 1.934782608695652,
+      "latency_p50_ms": 11474.8616036959,
+      "llm": "Qwen/Qwen2.5-1.5B-Instruct",
+      "device": "mps",
+      "platform": "macOS-26.5.1-arm64-arm-64bit",
+      "timestamp": "2026-09-29T02:16:16"
+    },
+    {
+      "name": "agent_heuristic",
+      "description": "LangGraph agent, rule-based router, LLM planner/writer, all tools incl. VLM",
+      "source": "benchmarks/results/agent_heuristic/summary.json",
+      "records": "benchmarks/results/agent_heuristic/records.jsonl",
+      "n": 46,
+      "accuracy": 0.6739130434782609,
+      "ci_low": 0.5217391304347826,
+      "ci_high": 0.8043478260869565,
+      "tool_calls": 2.6956521739130435,
+      "latency_p50_ms": 19596.882083453238,
+      "llm": "Qwen/Qwen2.5-1.5B-Instruct",
+      "device": "mps",
+      "platform": "macOS-26.5.1-arm64-arm-64bit",
+      "timestamp": "2026-09-29T01:00:19"
+    },
+    {
+      "name": "agent_llm",
+      "description": "LangGraph agent, LLM router (JSON actions) with heuristic fallback",
+      "source": "benchmarks/results/agent_llm/summary.json",
+      "records": "benchmarks/results/agent_llm/records.jsonl",
+      "n": 46,
+      "accuracy": 0.6956521739130435,
+      "ci_low": 0.5652173913043478,
+      "ci_high": 0.8260869565217391,
+      "tool_calls": 5.521739130434782,
+      "latency_p50_ms": 31197.12468702346,
+      "llm": "Qwen/Qwen2.5-1.5B-Instruct",
+      "device": "mps",
+      "platform": "macOS-26.5.1-arm64-arm-64bit",
+      "timestamp": "2026-09-29T02:06:24"
+    },
+    {
+      "name": "agent_learned",
+      "description": "Agent with RL-trained router policy (REINFORCE, see atlas.rl)",
+      "source": "benchmarks/results/agent_learned/summary.json",
+      "records": "benchmarks/results/agent_learned/records.jsonl",
+      "n": 46,
+      "accuracy": 0.6739130434782609,
+      "ci_low": 0.5434782608695652,
+      "ci_high": 0.8043478260869565,
+      "tool_calls": 1.0,
+      "latency_p50_ms": 9195.918103680015,
+      "llm": "Qwen/Qwen2.5-1.5B-Instruct",
+      "device": "mps",
+      "platform": "macOS-26.5.1-arm64-arm-64bit",
+      "timestamp": "2026-09-29T02:24:02"
+    },
+    {
+      "name": "agent_single_search",
+      "description": "Fixed baseline: one search_documents call, then writer (no RL)",
+      "source": "benchmarks/results/agent_single_search/summary.json",
+      "records": "benchmarks/results/agent_single_search/records.jsonl",
+      "n": 46,
+      "accuracy": 0.6739130434782609,
+      "ci_low": 0.5434782608695652,
+      "ci_high": 0.8043478260869565,
+      "tool_calls": 1.0,
+      "latency_p50_ms": 8554.663166985847,
+      "llm": "Qwen/Qwen2.5-1.5B-Instruct",
+      "device": "mps",
+      "platform": "macOS-27.0.1-arm64-arm-64bit",
+      "timestamp": "2026-10-21T21:07:08"
+    }
+  ],
+  "retrieval": [
+    {
+      "name": "retrieval_dense",
+      "description": "Dense-only retrieval (bge-small + FAISS exact IP)",
+      "source": "benchmarks/results/retrieval_dense/summary.json",
+      "n": 46,
+      "recall_at_5": 0.8152173913043478,
+      "latency_p50_ms": 7.073208689689636
+    },
+    {
+      "name": "retrieval_bm25",
+      "description": "BM25-only sparse retrieval",
+      "source": "benchmarks/results/retrieval_bm25/summary.json",
+      "n": 46,
+      "recall_at_5": 0.8586956521739131,
+      "latency_p50_ms": 0.08560391142964363
+    },
+    {
+      "name": "retrieval_hybrid",
+      "description": "Hybrid BM25 + dense with RRF fusion",
+      "source": "benchmarks/results/retrieval_hybrid/summary.json",
+      "n": 46,
+      "recall_at_5": 0.8695652173913043,
+      "latency_p50_ms": 6.67149992659688
+    },
+    {
+      "name": "retrieval_hybrid_weighted",
+      "description": "Hybrid with weighted min-max fusion (w=0.5)",
+      "source": "benchmarks/results/retrieval_hybrid_weighted/summary.json",
+      "n": 46,
+      "recall_at_5": 0.8695652173913043,
+      "latency_p50_ms": 6.810812279582024
+    },
+    {
+      "name": "retrieval_dense_rerank",
+      "description": "Dense top-30 + cross-encoder rerank",
+      "source": "benchmarks/results/retrieval_dense_rerank/summary.json",
+      "n": 46,
+      "recall_at_5": 0.8804347826086957,
+      "latency_p50_ms": 251.60256261005998
+    },
+    {
+      "name": "retrieval_hybrid_rerank",
+      "description": "Hybrid RRF + cross-encoder rerank of top-30",
+      "source": "benchmarks/results/retrieval_hybrid_rerank/summary.json",
+      "n": 46,
+      "recall_at_5": 0.8804347826086957,
+      "latency_p50_ms": 231.71483306214213
+    }
+  ],
+  "demo": {
+    "source": "docs/experiments/demo_output.md",
+    "benchmark_id": "fig-01",
+    "gold": "0.095",
+    "lines": 31
+  },
+  "bootstrap": {
+    "n_boot": 5000,
+    "seed": 0,
+    "percentiles": [
+      2.5,
+      97.5
+    ]
+  },
+  "note": "Generated by scripts/make_readme_figures.py. Do not edit by hand."
+}
