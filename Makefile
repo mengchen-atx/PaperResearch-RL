@@ -3,7 +3,7 @@ PY ?= .venv/bin/python
 export HF_HUB_OFFLINE ?= 0
 
 .PHONY: setup data ingest ask research run serve-model test test-all lint benchmark benchmark-retrieval \
-        benchmark-agent benchmark-multimodal train-sft train-rl train-grpo-smoke results docker-up k8s-render clean \
+        benchmark-agent benchmark-multimodal train-sft train-rl train-grpo-smoke results readme-figures docker-up k8s-render clean \
         quickstart
 
 setup:              ## create venv and install all extras
@@ -52,6 +52,9 @@ benchmark-multimodal:
 
 results:            ## regenerate docs/experiments/results.md from benchmarks/results
 	$(PY) scripts/make_results_table.py
+
+readme-figures:     ## regenerate docs/assets README charts from benchmarks/results
+	$(PY) scripts/make_readme_figures.py
 
 train-sft:
 	$(PY) scripts/train_sft.py -c configs/sft/lora.yaml
