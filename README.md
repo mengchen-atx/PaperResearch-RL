@@ -1,8 +1,8 @@
 # Atlas
 
-**Research questions over papers, answered with retrieval, tools, and page-level citations.**
+**Hand-built hybrid RAG and a LangGraph research agent: page-level citations, a 46-question benchmark with confidence intervals, LoRA SFT on its own trajectories, a REINFORCE tool router, and a FastAPI service.**
 
-Every agent run is stored as a trajectory and can feed supervised fine-tuning (LoRA) and a router trained with REINFORCE. Every number below was produced by a command in this repo. The [honesty contract](#honesty-contract) says what was actually run.
+Every number on this page comes from a command in this repo. What was run, and what is only configured, is the [honesty contract](#honesty-contract).
 
 [![CI](https://github.com/mengchen-atx/PaperResearch-RL/actions/workflows/ci.yml/badge.svg)](https://github.com/mengchen-atx/PaperResearch-RL/actions/workflows/ci.yml)
 [![version](https://img.shields.io/badge/version-0.1.0-555555)](pyproject.toml)
@@ -23,23 +23,85 @@ Every agent run is stored as a trajectory and can feed supervised fine-tuning (L
 [![FAISS](https://img.shields.io/badge/FAISS-cpu-00A3E0)](https://github.com/facebookresearch/faiss)
 [![Docker Compose](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](docker/docker-compose.yml)
 
-<p align="center">
-  <img src="docs/assets/quickstart_demo.png" alt="CPU quickstart: question, tool trace, extractive answer, and page-level sources" width="820">
-</p>
+## Highlights
 
-CPU `make quickstart` on this machine: hashing embedder, extractive answerer, reranker off, heuristic router. The text is unedited and is **not** the Qwen2.5-1.5B benchmark. Raw JSON: [`docs/assets/quickstart_research.json`](docs/assets/quickstart_research.json), plus the single-shot ask capture [`docs/assets/quickstart_ask.json`](docs/assets/quickstart_ask.json). An unedited full-model transcript is in [`docs/experiments/demo_output.md`](docs/experiments/demo_output.md).
+Same 46 PDF-verified questions, Qwen2.5-1.5B unless noted, Apple M4. One question is 2.2 points. Intervals are 95% bootstrap CIs.
+
+- **Retrieval is the gain.** Closed-book Qwen2.5-1.5B scores 10.9% (2.2–19.6). Hybrid BM25 + dense with a cross-encoder scores **69.6%** (56.5–82.6).
+- **Recall@5**, page-level: dense 81.5 → BM25 85.9 → hybrid 87.0 → hybrid + rerank **88.0**.
+- **The agent ties the best RAG system and costs more.** The LLM router is also 69.6% (56.5–82.6), at 5.52 tool calls and 31.2 s p50. It does not beat single-shot RAG.
+- **The RL router spends one search.** 67.4% (54.3–80.4), 1.00 tool call, 9.2 s p50. That matches a fixed single-search baseline on the same 46 questions (paired difference 0.0). [Why that happened](#reading-the-rl-and-sft-results).
+- **LoRA SFT learned the protocol, not a better answer.** On Qwen2.5-0.5B, valid router JSON went from 71.0% to 100% and action accuracy from 45.2% to 71.0% (31 held-out steps). End-to-end accuracy fell: 52.2% vs 58.7% for the same 0.5B model without the adapter.
+- **The API that was actually loaded.** `POST /retrieve`, 200 requests at concurrency 8: **0 errors**, 13.2 req/s. The inference numbers (TTFT 229 ms, 19.3 tok/s at concurrency 1) are the Hugging Face dev server, not vLLM.
+
+![Answer accuracy versus p50 latency, with 95% bootstrap intervals, and mean tool calls](docs/assets/accuracy_latency.png)
 
 ## Quickstart
 
-CPU only, about two minutes, no model downloads. Answers show retrieval, not the benchmark generator.
+From a fresh clone. No model downloads. CI uses the same CPU torch wheel and `pip install -e ".[dev]"`, then ruff and the pytest line below. `make quickstart` is local only.
 
 ```bash
-python -m venv .venv && source .venv/bin/activate && pip install -e ".[dev]"
+python -m venv .venv && source .venv/bin/activate
+pip install torch --index-url https://download.pytorch.org/whl/cpu
+pip install -e ".[dev]"
 make quickstart PY=python
 pytest tests -m "not slow"
 ```
 
-`make quickstart` downloads 4 public arXiv PDFs, builds its own index (`data/processed/quickstart_index`), prints one cited RAG answer, and runs one agent. Headline numbers need bge-small, the cross-encoder, and Qwen2.5-1.5B: [full setup](#full-setup).
+`make quickstart` is the `quickstart` target in the `Makefile`. It downloads four arXiv v1 PDFs into `data/raw/`, builds `data/processed/quickstart_index`, then runs:
+
+```bash
+python -m atlas ask "What is the model dimension d_model used by the Transformer?"
+python -m atlas research "By how many BLEU points does Transformer (big) outperform the ConvS2S Ensemble on EN-DE?"
+```
+
+with `ATLAS__EMBEDDING__PROVIDER=hashing`, `ATLAS__LLM__PROVIDER=extractive`, the reranker off, and heuristic planner/critic. `PY` defaults to `.venv/bin/python`, so after `make setup` you can run `make quickstart` with no `PY=`. This path does **not** produce the 69.6% number. That run needs [the full models](#full-setup).
+
+CI on Python 3.11 and 3.12 then runs `ruff check src tests scripts` and the same pytest command. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+<p align="center">
+  <img src="docs/assets/quickstart_demo.png" alt="Unedited CPU quickstart: question, tool trace, extractive answer, page-level sources" width="820">
+</p>
+
+Unedited output of that research command on a CPU machine. Raw JSON: [`docs/assets/quickstart_research.json`](docs/assets/quickstart_research.json) and the ask capture [`docs/assets/quickstart_ask.json`](docs/assets/quickstart_ask.json). A full-model transcript, including wrong answers, is [`docs/experiments/demo_output.md`](docs/experiments/demo_output.md).
+
+## Problem
+
+A fluent answer to a research question is not a sourced one. The model misremembers numbers, cannot point at a page, and is weak on tables and charts. Atlas is the engineering response that was actually built and measured:
+
+1. How much does retrieval help, and which stage (BM25, dense, fusion, rerank) moves Recall@5?
+2. When does a multi-step agent beat one retrieval, and what does it cost in tool calls and latency?
+3. Can a small open model learn the agent protocol from its own successful trajectories?
+4. Can RL cut tool use without losing accuracy?
+5. What does serving it take: async jobs, streaming, caching, and a path to vLLM and more than one machine?
+
+On this benchmark the measured answers are: retrieval helps; the agent does not beat the best RAG; SFT learned the protocol and did not improve answers; the RL router collapsed to one search; vLLM and Kubernetes are configured and were not run.
+
+## Design decisions
+
+Longer notes, with the alternatives that were rejected: [ARCHITECTURE.md](ARCHITECTURE.md).
+
+**Hybrid retrieval, then a cross-encoder.** BM25 hits model names and numbers. Dense retrieval (`bge-small-en-v1.5`, FAISS exact inner product) hits paraphrases. Their scores are not on one scale, so the default fusion is reciprocal rank fusion, not a weighted sum of raw scores. The cross-encoder reads query and chunk together, so it only reranks the top 30. Measured Recall@5 goes 81.5 → 88.0 along that stack. End-to-end is not monotone: hybrid without the reranker scored 58.7%, below vanilla dense RAG at 63.0%; adding the reranker reached 69.6%. Several remaining errors are the 1.5B generator misreading a number that was already in the evidence.
+
+**A bounded LangGraph loop, not an open ReAct loop.** The graph is `planner → router → act → critic → router`. Only the router leaves the loop: `replan` back to the planner, or `answer` to the writer. Hitting `max_iterations` (6), `max_tool_calls` (8), or the wall-clock deadline is implemented inside the router, which then takes the answer edge. The action set is fixed, so a heuristic, an LLM JSON policy, and a learned policy are the same interface and can share one benchmark. The bound is load-bearing: the 1.5B LLM router reached the tool budget on 93.5% of questions.
+
+**REINFORCE with a learned baseline.** Router episodes are a handful of discrete actions. The trainer is Monte Carlo advantage actor-critic: reward-to-go minus a learned value, plus an entropy bonus (`src/atlas/rl/train.py`). PPO is the wrong tool at this size; GRPO exists for the LLM router and was smoke-tested (2 steps), not trained to a result. The reward penalizes tool calls (`lambda_tool_cost` 0.03 in `configs/rl/reinforce.yaml`). On this benchmark that penalty wins: the learned policy issues one `search_documents` and never calls the table, SQL, or vision tools (`required_tool_recall` 0.0). It matches the no-learning single-search baseline question for question.
+
+**Publish the interval, and say what did not run.** With 46 questions, a one-question swing is 2.2 points, and most ablation gaps sit inside the bootstrap interval. The contract is that a README number has a command and a file, and that vLLM, QLoRA, a built Docker image, and Kubernetes stay labeled "configured, not validated" until they are run.
+
+## Engineering
+
+**Tests.** `tests/` is offline: hashing embedder, extractive answerer, no downloads. `pytest tests -m "not slow"` is the CI command. One end-to-end test is marked `slow` and also skipped unless `ATLAS_RUN_SLOW=1`.
+
+**CI.** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) on Python 3.11 and 3.12: CPU PyTorch wheel, `pip install -e ".[dev]"`, `ruff check src tests scripts`, then the offline tests. `HF_HUB_OFFLINE=1`.
+
+**Reproducibility.** Each ablation is a file in `configs/experiments/` that changes one knob. `make benchmark` and `make benchmark-agent` write `benchmarks/results/`. `make results` regenerates `docs/experiments/results.md` from the per-question JSONL. `python scripts/make_readme_figures.py` redraws the charts from those files and checks them against `summary.json`.
+
+**Config.** `configs/default.yaml`, then optional YAML, then `ATLAS__SECTION__KEY`. API keys are not stored in YAML. A provider names an environment variable and the key is read at call time (`src/atlas/common/config.py`).
+
+**API.** `python -m atlas serve` is FastAPI. Implemented routes: `GET /health`, `GET /ready`, `GET /metrics`, `POST /retrieve`, `POST /ask`, `POST /research` (202), `GET /research/{job_id}`, `GET /research/{job_id}/events` (SSE), `GET /traces/{trace_id}`, `GET /sessions`, `POST /documents`, `GET /`. OpenAPI is at `/docs`. The single-node process (memory queue, FAISS) is what the load test measured. Redis and Qdrant are config switches, exercised in tests with `fakeredis` and embedded Qdrant, not against live servers.
+
+**Docker.** `docker/Dockerfile` and `docker/docker-compose.yml` describe api, workers, Redis, Qdrant, and an optional GPU vLLM profile. The image was not built here (no Docker daemon in the measurement environment). Kubernetes manifests under `deployment/kubernetes/` are parsed in `tests/unit/test_deploy_config.py` and were not applied.
 
 ## Headline results
 
@@ -131,18 +193,6 @@ Milestones: **[ROADMAP.md](ROADMAP.md)**.
 | Agentic RL | MDP over the production nodes, reward with potential shaping, actor-critic REINFORCE, GRPO entry point | Router RL verified at small scale; GRPO smoke only |
 | Serving | FastAPI sync/async/SSE, job queue (memory/Redis), worker, uploads, traces, metrics, dev model server | Verified locally; vLLM configured, not validated |
 | Deployment | Dockerfile, Compose, Kubernetes manifests (HPA, KEDA, GPU vLLM, ingress) | Configured, not validated; manifests statically checked in tests |
-
-## Why this project exists
-
-LLMs answer research questions fluently but unreliably. They misremember numbers, cannot show sources, and fail on facts that live in tables or charts. Atlas is a working, measured answer to these engineering questions:
-
-1. How much does retrieval help, and which retrieval components (BM25, dense, fusion, reranking) matter?
-2. When does a multi-step agent beat single-shot RAG, and what does it cost in tool calls and latency?
-3. Can a small open model learn the agent protocol from its own successful trajectories (SFT)?
-4. Can RL make tool use more efficient without losing accuracy?
-5. What does it take to serve this reliably: async jobs, streaming, caching, vLLM, horizontal scaling?
-
-On this benchmark the measured answers are: retrieval helps a lot; the agent does not beat the best RAG; SFT learned the protocol and did not improve answers; the RL router collapsed to one search; vLLM and Kubernetes are configured and were not run.
 
 ## Full setup
 
@@ -276,34 +326,31 @@ Measured on the HF dev server on M4, not vLLM: TTFT 229 ms, 19.3 tok/s at concur
 
 Single-node mode (`atlas serve`, in-memory queue, FAISS) is the default and is what all measurements used. Distributed mode switches config only: `ATLAS__SERVING__QUEUE_BACKEND=redis`, `ATLAS__RETRIEVAL__VECTOR_STORE=qdrant`, and `atlas worker` processes.
 
-## Repository layout
+## Project structure
 
 ```
-src/atlas/
-  common/        typed config (YAML + env), domain types, cache, safe paths, errors
-  ingestion/     loaders (PDF/TXT/MD) and the ingest pipeline
-  chunking/      sentence-packing chunker with section detection
-  embeddings/    sentence-transformers + hashing embedders, disk embedding cache
-  retrieval/     vector stores (NumPy/FAISS/Qdrant), BM25, fusion, filters, index, retriever
-  reranking/     cross-encoder + lexical rerankers
-  multimodal/    table/figure extraction, SQLite table store, VLM providers
-  llm/           provider-agnostic client (HF local, OpenAI-compatible/vLLM, Anthropic, extractive)
-  rag/           prompts, citation parsing/validation, RAG + closed-book pipelines
-  agents/        LangGraph graph, nodes, policies, features/action mask, state, reducers
-  tools/         tool interface/executor + documents, SQL, Python sandbox, visual, web tools
-  memory/        session memory helpers, persistent research history
-  evaluation/    benchmark schema, metrics, runners
-  trajectory/    trajectory schema, JSONL store, validation, quality filter
-  training/      trajectory → SFT data, LoRA/QLoRA trainer, imitation eval
-  rl/            environment, reward, policy network, REINFORCE trainer, GRPO
-  integrations/  LangChain adapters (retriever + tools) over the hand-written components
-  serving/       FastAPI app, schemas, job store/queue, worker, dev model server, web UI
-  observability/ structured logging, tracing, Prometheus metrics
-configs/         default.yaml, experiments/, sft/, rl/
-scripts/         benchmarks, training, demo, corpus download, results table, README figures
-tests/           unit/ integration/ e2e/   (offline; `-m slow` for real models)
-docker/, deployment/kubernetes/, docs/, benchmarks/results/
+.
+├── src/atlas/          library
+│   ├── retrieval/      BM25, FAISS/NumPy/Qdrant, RRF and weighted fusion
+│   ├── reranking/      cross-encoder
+│   ├── agents/         LangGraph planner, router, act, critic, writer
+│   ├── rag/            prompts and page-level citation checks
+│   ├── rl/             REINFORCE router
+│   ├── training/       trajectory → LoRA SFT
+│   ├── serving/        FastAPI, jobs, SSE, dev model server
+│   └── tools/          documents, SQL, Python sandbox, visual, web
+├── configs/            default.yaml, experiments/, sft/, rl/
+├── scripts/            benchmarks, training, corpus download, README figures
+├── tests/              unit/, integration/, e2e/  (offline; one slow real-model test)
+├── benchmarks/results/ committed per-question JSONL and summary.json
+├── docs/               design notes, experiment write-up, README assets
+├── docker/             Dockerfile and Compose (not built in CI)
+├── deployment/kubernetes/  manifests, statically checked, not applied
+├── Makefile            setup, quickstart, test, benchmark, figures
+└── pyproject.toml
 ```
+
+Other packages under `src/atlas/`: `ingestion`, `chunking`, `embeddings`, `multimodal`, `llm`, `evaluation`, `trajectory`, `integrations` (LangChain), `memory`, `observability`, `common`.
 
 ## Honesty contract
 
@@ -329,4 +376,8 @@ See [ROADMAP.md](ROADMAP.md). The next items are a larger benchmark with unanswe
 
 ## License
 
-MIT. The corpus consists of public arXiv papers downloaded by script (not redistributed).
+MIT. Copyright (c) 2026 Meng Chen. See [LICENSE](LICENSE).
+
+The corpus is public arXiv papers downloaded by `scripts/download_corpus.sh` and is not redistributed.
+
+[Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md) · [Cite this project](CITATION.cff)
